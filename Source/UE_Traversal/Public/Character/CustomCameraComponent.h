@@ -17,12 +17,18 @@ public:
 	
 	UCustomCameraComponent();
 
-	void Update();
 	void Rotate(const struct FInputActionValue& axis);
 
 private:
+	
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	class ACharacter_Main *Character = nullptr;
+	class USpringArmComponent *BoomStick = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
+	float RotationLag = 8.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
+	float PositionLag = 8.0f;
 };
