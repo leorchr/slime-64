@@ -45,26 +45,29 @@ void AController_Main::MovePlayer(const FInputActionValue& value)
 		return;
 
 	const FVector2D moveValue = value.Get<FVector2D>();
-
-	if (moveValue.Y != 0.f) {
-		const FVector3d dir = character->GetActorForwardVector() * moveValue.Y;
-		character->AddMovementInput(dir);
-	}
-
-	if (moveValue.X != 0.f) {
-		const FVector3d dir = character->GetActorRightVector() * moveValue.X;
-		character->AddMovementInput(dir);
-	}
+	character->Move(moveValue);
 }
 
 void AController_Main::Jump(const FInputActionValue& value)
 {
+	if (!character)
+		return;
+
 	character->Jump();
 }
 
 void AController_Main::Run(const FInputActionValue& value)
 {
 	//Run Script
+	const bool runValue = value.Get<bool>();
+
+	if (!character)
+		return;
+
+	UE_LOG(LogTemp, Log, TEXT("IM RUNNING"));
+	character->Run(runValue);
+
+	
 }
 
 void AController_Main::Rotate(const FInputActionValue& value)
