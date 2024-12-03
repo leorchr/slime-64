@@ -4,7 +4,7 @@
 #include"Components/ActorComponent.h"
 #include"Modifier.generated.h"
 
-UCLASS(ClassGroup=(Custom) , meta = (BlueprintSpawnableComponent)) class UE_TRAVERSAL_API UModifier : public UActorComponent
+UCLASS(ClassGroup=(Custom) , Blueprintable , meta = (BlueprintSpawnableComponent)) class UE_TRAVERSAL_API UModifier : public UActorComponent
 {
 	   GENERATED_BODY()
 
