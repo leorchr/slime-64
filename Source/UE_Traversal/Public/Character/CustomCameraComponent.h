@@ -23,6 +23,8 @@ private:
 	
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	FVector GetPredictLocation();
 	
 	class ACharacter_Main *Character = nullptr;
 	class USpringArmComponent *BoomStick = nullptr;
@@ -31,4 +33,6 @@ private:
 	float RotationLag = 8.0f;
 	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
 	float PositionLag = 8.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
+	float ForwardDelta = 8.0f;
 };

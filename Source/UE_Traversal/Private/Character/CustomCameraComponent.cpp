@@ -32,6 +32,13 @@ void UCustomCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	BoomStick->SetWorldLocation(FMath::VInterpTo(BoomStick->GetComponentLocation(), Character->GetActorLocation(), DeltaTime, PositionLag));
 }
 
+FVector UCustomCameraComponent::GetPredictLocation()
+{
+	if (!Character) return FVector(0., 0., 0.);
+	FVector Location = Character->GetActorLocation();
+	FVector Velocity = Character->GetVelocity();
+}
+
 void UCustomCameraComponent::BeginPlay()
 {
 	Super::BeginPlay();
