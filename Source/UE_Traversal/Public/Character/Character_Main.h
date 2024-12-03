@@ -13,7 +13,7 @@ class UE_TRAVERSAL_API ACharacter_Main : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	ACharacter_Main();
+	ACharacter_Main(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,4 +26,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Default Components
+	UPROPERTY(EditDefaultsOnly)
+	class USpringArmComponent *SpringArm = nullptr;
+	UPROPERTY(EditDefaultsOnly)
+	class UCustomCameraComponent *Camera = nullptr;
 };
