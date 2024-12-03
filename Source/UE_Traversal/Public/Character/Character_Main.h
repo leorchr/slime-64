@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|Running")
 	float MaxRunAcceleration = 1200.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|Jump")
+	float JumpForce = 1200.f;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
 	float WallGlidingGravity = 0.2f;
 public:	
