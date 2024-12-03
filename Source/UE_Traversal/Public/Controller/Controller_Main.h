@@ -19,5 +19,21 @@ public:
 	virtual void SetPawn(APawn* InPawn) override;
 
 protected:
-	TWeakObjectPtr<class UCustomCameraController> CameraController = nullptr;	
+	class ACharacter_Main* character = nullptr;
+	TWeakObjectPtr<class UCustomCameraController> CameraController = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
+	class UInputMappingContext* inputMapping;
+	//Inputs
+	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput|Movement")
+	class UInputAction* inputActionMove;
+	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput|Movement")
+	class UInputAction* inputActionJump;
+	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput|Movement")
+	class UInputAction* inputActionRun;
+
+	//Movement Functions
+	void MovePlayer(const struct FInputActionValue& value);
+	void Jump(const struct FInputActionValue& value);
+	void Run(const struct FInputActionValue& value);
 };
