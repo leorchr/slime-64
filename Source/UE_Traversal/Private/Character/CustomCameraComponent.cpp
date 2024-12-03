@@ -37,6 +37,7 @@ FVector UCustomCameraComponent::GetPredictLocation()
 	if (!Character) return FVector(0., 0., 0.);
 	FVector Location = Character->GetActorLocation();
 	FVector Velocity = Character->GetVelocity();
+	return FVector(0.0f,0.0f,0.0f);
 }
 
 void UCustomCameraComponent::BeginPlay()
