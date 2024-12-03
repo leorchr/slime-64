@@ -4,6 +4,7 @@
 #include "Controller/Controller_Main.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "Character/CustomCameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
@@ -25,6 +26,7 @@ void AController_Main::SetupInputComponent()
 	inputComponent->BindAction(inputActionMove, ETriggerEvent::Triggered, this, &AController_Main::MovePlayer);
 	inputComponent->BindAction(inputActionRun, ETriggerEvent::Triggered, this, &AController_Main::Run);
 	inputComponent->BindAction(inputActionJump, ETriggerEvent::Triggered, this, &AController_Main::Jump);
+	inputComponent->BindAction(inputActionLook, ETriggerEvent::Triggered, this, &AController_Main::Rotate);
 }
 
 void AController_Main::SetPawn(APawn* InPawn)
@@ -35,14 +37,6 @@ void AController_Main::SetPawn(APawn* InPawn)
 		return;
 
 	character = Cast<ACharacter_Main>(InPawn);
-
-	// Get reference to our Character
-	CameraController = GetComponentByClass<UCustomCameraController>();
-	
-	if (CameraController.IsValid())
-	{
-		CameraController->SetupInputComponent(InputComponent, Cast<ACharacter_Main>(InPawn));
-	}
 }
 
 void AController_Main::MovePlayer(const FInputActionValue& value)
@@ -71,4 +65,12 @@ void AController_Main::Jump(const FInputActionValue& value)
 void AController_Main::Run(const FInputActionValue& value)
 {
 	//Run Script
+}
+
+void AController_Main::Rotate(const FInputActionValue& value)
+{
+	if (character->Camera)
+	{
+		character->Camera->Rotate(value);
+	}
 }
