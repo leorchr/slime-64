@@ -12,6 +12,17 @@
 UCLASS()
 class UE_TRAVERSAL_API UCustomCameraComponent : public UCameraComponent
 {
+public:
 	GENERATED_BODY()
 	
+	UCustomCameraComponent();
+
+	void Update();
+	void Rotate(const struct FInputActionValue& axis);
+
+private:
+	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	class ACharacter_Main *Character = nullptr;
 };

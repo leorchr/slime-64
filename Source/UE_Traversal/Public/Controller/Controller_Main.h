@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "CustomCameraController.h"
 #include "Controller_Main.generated.h"
 
 /**
@@ -20,7 +19,6 @@ public:
 
 protected:
 	class ACharacter_Main* character = nullptr;
-	TWeakObjectPtr<class UCustomCameraController> CameraController = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
 	class UInputMappingContext* inputMapping;
@@ -31,9 +29,12 @@ protected:
 	class UInputAction* inputActionJump;
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput|Movement")
 	class UInputAction* inputActionRun;
+	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput|Look")
+	class UInputAction* inputActionLook;
 
 	//Movement Functions
 	void MovePlayer(const struct FInputActionValue& value);
 	void Jump(const struct FInputActionValue& value);
 	void Run(const struct FInputActionValue& value);
+	void Rotate(const struct FInputActionValue& value);
 };

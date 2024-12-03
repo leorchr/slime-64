@@ -19,9 +19,26 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float BaseGravity = 1.f;
+
+	//Data
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|Walking")
+	float MaxWalkSpeed = 800.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|Walking")
+	float MaxWalkAcceleration = 800.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|Running")
+	float MaxRunSpeed = 1200.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|Running")
+	float MaxRunAcceleration = 1200.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	float WallGlidingGravity = 0.2f;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -31,4 +48,11 @@ public:
 	class USpringArmComponent *SpringArm = nullptr;
 	UPROPERTY(EditDefaultsOnly)
 	class UCustomCameraComponent *Camera = nullptr;
+
+	UCharacterMovementComponent* movement = nullptr;
+
+	virtual bool CanJumpInternal_Implementation() const override;
+
+	void Move(FVector2d Direction);
+	void Run(bool RunToggle);
 };
