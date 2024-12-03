@@ -34,7 +34,9 @@ ACharacter_Main::ACharacter_Main(const FObjectInitializer& ObjectInitializer)
 void ACharacter_Main::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	movement->MaxWalkSpeed = MaxWalkSpeed;
+	movement->MaxAcceleration = MaxWalkAcceleration;
+	movement->JumpZVelocity = JumpForce;
 }
 
 // Called every frame
