@@ -3,6 +3,7 @@
 
 #include "Character/CustomCameraComponent.h"
 
+#include "InputActionValue.h"
 #include "Character/Character_Main.h"
 
 UCustomCameraComponent::UCustomCameraComponent()
@@ -14,8 +15,12 @@ void UCustomCameraComponent::Update()
 {
 }
 
-void UCustomCameraComponent::Rotate(const FInputActionValue& axis)
+void UCustomCameraComponent::Rotate(const FInputActionValue& Value)
 {
+	FVector2d Axis = Value.Get<FVector2d>();
+
+	Character->AddControllerYawInput(Axis.X);
+	Character->AddControllerPitchInput(Axis.Y);
 }
 
 void UCustomCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType,
