@@ -9,6 +9,7 @@ UCharacterHealth::UCharacterHealth()
 void UCharacterHealth::BeginPlay()
 {
 	Super::BeginPlay();
+	startHealth = health;
 
 	CapsuleComponent = GetOwner()->FindComponentByClass<UCapsuleComponent>();
 	if (CapsuleComponent)
@@ -21,6 +22,11 @@ void UCharacterHealth::BeginPlay()
 	}
 }
 
+void UCharacterHealth::ResetHealth()
+{
+	health = startHealth;
+}
+
 void UCharacterHealth::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if(health > 0)
@@ -28,5 +34,8 @@ void UCharacterHealth::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 		health--;
 		OnHealthChanged.Broadcast(health);
 	}
+	if(health <= 0)
+	{
+		OnGameOver.Broadcast();
+	}
 }
-

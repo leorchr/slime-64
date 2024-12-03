@@ -5,6 +5,7 @@
 #include "CharacterHealth.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, int32, NewHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
 
 UCLASS( Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_TRAVERSAL_API UCharacterHealth : public UActorComponent
@@ -18,6 +19,12 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FOnHealthChanged OnHealthChanged;
 
+	UPROPERTY(BlueprintAssignable, Category = "Health")
+	FOnGameOver OnGameOver;
+
+	UFUNCTION(BlueprintCallable)
+	void ResetHealth();
+
 private:
 	UPROPERTY()
 	class UCapsuleComponent* CapsuleComponent;
@@ -30,4 +37,5 @@ private:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	int health = 3;
+	int startHealth;
 };
