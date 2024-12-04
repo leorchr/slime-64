@@ -232,7 +232,7 @@ void ACharacter_Main::Move(FVector2d Direction)
 			cameraRight.Z = 0;
 			cameraRight.Normalize();
 			const FVector3d dir = cameraRight * Direction.X;
-			AddMovementInput(dir);
+			dirWished += dir;
 		}
 	}
 }
