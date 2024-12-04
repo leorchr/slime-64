@@ -86,8 +86,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
 	float InclinaisonToleranceStick = 0.17f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	float WallUnstickTolerance = 0.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
 	float TimeToUnstick = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	float VerticalWallJumpForce = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	float HorizontalWallJumpForce = 1.f;
 	float StickyTimer = TimeToUnstick;
 
 	void setNewState(EMovementState newState);
@@ -125,4 +132,5 @@ public:
 
 	void Move(FVector2d Direction);
 	void Run(bool RunToggle);
+	void CharacterJump();
 };

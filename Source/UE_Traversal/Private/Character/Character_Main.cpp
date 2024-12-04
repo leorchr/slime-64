@@ -48,10 +48,12 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 		}
 		else
 		{
-			StickyTimer = 0;
+			StickyTimer = 0.1;
 		}
 		movement->GravityScale = 0;
 		movement->Velocity = FVector::Zero();
+
+		lastWallNormal = Hit.Normal;
 		
 		JumpCounter = FMath::Max(1,JumpCounter);
 
@@ -234,6 +236,14 @@ void ACharacter_Main::Move(FVector2d Direction)
 			const FVector3d dir = cameraRight * Direction.X;
 			dirWished += dir;
 		}
+		if (dirWished.Length() > 0.5) {
+			float comparisonWallNormal = FVector::DotProduct(dirWished, lastWallNormal);
+			if (comparisonWallNormal > WallUnstickTolerance) {
+				movement->GravityScale = BaseGravity;
+				setNewState(EMovementState::Falling);
+				movement->bNotifyApex = false;
+			}
+		}
 	}
 }
 
@@ -253,5 +263,19 @@ void ACharacter_Main::Run(bool RunToggle)
 		if (!movement->IsFalling() && movement->Velocity.Length() > 10) {
 			setNewState(EMovementState::Walking);
 		}
+	}
+}
+
+void ACharacter_Main::CharacterJump()
+{
+	if (currentState != EMovementState::WallSliding && currentState != EMovementState::WallSticked) {
+		Jump();
+	}
+	else {
+		FVector WallJumpForce =  lastWallNormal.ForwardVector * HorizontalWallJumpForce + lastWallNormal.UpVector * VerticalWallJumpForce;
+		movement->AddImpulse(WallJumpForce,true);
+		setNewState(EMovementState::Jumping);
+		movement->bNotifyApex = true;
+		movement->GravityScale = BaseGravity;
 	}
 }
