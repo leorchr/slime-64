@@ -37,17 +37,19 @@ void ACharacter_Main::BeginPlay()
 	movement->MaxWalkSpeed = MaxWalkSpeed;
 	movement->MaxAcceleration = MaxWalkAcceleration;
 	movement->JumpZVelocity = JumpForce;
-
+	movement->bNotifyApex = true;
 }
 
 
 
 void ACharacter_Main::setNewState(EMovementState newState)
 {
-	OnStateChange.Broadcast(currentState, newState);
-	currentState = newState;
-	const FString Message = UEnum::GetValueAsString(newState);
-	UE_LOG(LogTemp,Log,TEXT("New State : %s"),*Message)
+	if (newState != currentState) {
+		OnStateChange.Broadcast(currentState, newState);
+		currentState = newState;
+		const FString Message = UEnum::GetValueAsString(newState);
+		UE_LOG(LogTemp, Log, TEXT("New State : %s"), *Message)
+	}
 }
 
 // Called every frame
@@ -69,7 +71,8 @@ void ACharacter_Main::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 	JumpCounter = JumpNumber;
-	if (movement->Velocity.Length() == 0) {
+
+	if (lastMoveDir.Length() == 0) {
 		setNewState(EMovementState::Idle);
 	}
 	else {
@@ -79,7 +82,6 @@ void ACharacter_Main::Landed(const FHitResult& Hit)
 
 void ACharacter_Main::OnJumped_Implementation()
 {
-	UE_LOG(LogTemp, Log, TEXT("Jumpes"))
 	Super::OnJumped_Implementation();
 	JumpCounter--;
 	setNewState(EMovementState::Jumping);
@@ -101,10 +103,12 @@ bool ACharacter_Main::CanJumpInternal_Implementation() const
 
 void ACharacter_Main::NotifyJumpApex()
 {
+	setNewState(EMovementState::Falling);
 }
 
 void ACharacter_Main::Move(FVector2d Direction)
 {
+	lastMoveDir = Direction;
 	if (Direction.Y != 0.f) {
 		FVector3d cameraForward = Camera->GetForwardVector();
 		cameraForward.Z = 0;
@@ -131,10 +135,13 @@ void ACharacter_Main::Move(FVector2d Direction)
 		}
 	}
 	else {
-		EMovementState nState = bIsRunning ? EMovementState::Running : EMovementState::Walking;
-		if (nState != currentState) {
-			setNewState(nState);
+		if (!movement->IsFalling()) {
+			EMovementState nState = bIsRunning ? EMovementState::Running : EMovementState::Walking;
+			if (nState != currentState) {
+				setNewState(nState);
+			}
 		}
+		
 	}
 }
 
