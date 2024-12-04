@@ -35,9 +35,12 @@ void UCustomCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	float Offset = FVector::Dist(BoomStick->GetComponentLocation(), Character->GetActorLocation());
 	if (Character->movement->IsFalling())
 	{
+		PositionLag = PositionJumpingLag;
 		BoomStick->SetWorldLocation(FMath::VInterpTo(BoomStick->GetComponentLocation(), Character->GetActorLocation(), DeltaTime, PositionLag));
 	} else
 	{
+		PositionLag = PositionWalkingLag;
+		
 		if (Offset < EndZone)
 		{
 			SeekPlayer = false;
