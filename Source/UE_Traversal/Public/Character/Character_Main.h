@@ -6,6 +6,19 @@
 #include "GameFramework/Character.h"
 #include "Character_Main.generated.h"
 
+UENUM()
+enum class MovementState : uint8
+{
+	Walking,
+	Running,
+	WallSliding,
+	Jumping,
+	Falling,
+	MAX UMETA(Hidden)
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStateChange, MovementState, OldState, MovementState, NewState);
+
 UCLASS()
 class UE_TRAVERSAL_API ACharacter_Main : public ACharacter
 {
@@ -14,6 +27,8 @@ class UE_TRAVERSAL_API ACharacter_Main : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ACharacter_Main(const FObjectInitializer& ObjectInitializer);
+
+	FOnStateChange OnStateChange;
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,6 +50,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|Jump")
 	float JumpForce = 1200.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|Jump")
+	int AdditionalJump = 1;
+	int jumpCounter = AdditionalJump;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
 	float WallGlidingGravity = 0.2f;
@@ -53,6 +71,8 @@ public:
 	class UCustomCameraComponent *Camera = nullptr;
 
 	UCharacterMovementComponent* movement = nullptr;
+
+	void OnLanded(const FHitResult& Hit);
 
 	virtual bool CanJumpInternal_Implementation() const override;
 

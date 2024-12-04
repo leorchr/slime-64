@@ -37,7 +37,10 @@ void ACharacter_Main::BeginPlay()
 	movement->MaxWalkSpeed = MaxWalkSpeed;
 	movement->MaxAcceleration = MaxWalkAcceleration;
 	movement->JumpZVelocity = JumpForce;
+
 }
+
+
 
 // Called every frame
 void ACharacter_Main::Tick(float DeltaTime)
@@ -54,6 +57,11 @@ void ACharacter_Main::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 }
 
 
+
+void ACharacter_Main::OnLanded(const FHitResult& Hit)
+{
+	UE_LOG(LogTemp, Log, TEXT("Has Lnded"));
+}
 
 bool ACharacter_Main::CanJumpInternal_Implementation() const
 {
