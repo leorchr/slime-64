@@ -7,10 +7,15 @@
 #include "Character/CustomCameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Actor.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ACharacter_Main::ACharacter_Main(const FObjectInitializer& ObjectInitializer)
 {
+
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ACharacter_Main::OnCompHit);
+
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -28,6 +33,17 @@ ACharacter_Main::ACharacter_Main(const FObjectInitializer& ObjectInitializer)
 		if (!SpringArm) return;
 		Camera->SetupAttachment(SpringArm);
 	}
+}
+
+void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	float dPrdct = FVector::DotProduct(Hit.Normal, FVector::UpVector);
+	UE_LOG(LogTemp, Log, TEXT("Hit Something | Normal : %f"), dPrdct);
+	if (dPrdct < 0.05 && dPrdct > -0.05) {
+		movement->GravityScale = 0;
+		movement->Velocity.Z = 0;
+	}
+	
 }
 
 // Called when the game starts or when spawned

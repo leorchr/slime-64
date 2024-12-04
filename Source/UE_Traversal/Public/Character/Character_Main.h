@@ -44,6 +44,9 @@ public:
 
 	bool bIsRunning;
 
+	UFUNCTION()
+	void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -73,6 +76,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
 	float WallGlidingGravity = 0.2f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	float minimalVelocitToStick= 300.f;
 
 	void setNewState(EMovementState newState);
 
