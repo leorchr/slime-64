@@ -16,9 +16,12 @@ UCLASS(ClassGroup=(Custom) , Blueprintable , meta=(BlueprintSpawnableComponent))
 
     //Properties
 
-    public : UPROPERTY(EditAnywhere , BlueprintReadWrite , meta = (ExposeOnSpawn = true)) bool bAssignLimitHealthToCurrent;
+    public : UPROPERTY(EditAnywhere , BlueprintReadWrite , meta = (ExposeOnSpawn = true)) bool bAssignHealthLimitToCurrent;
     public : UPROPERTY(EditAnywhere , BlueprintReadWrite , meta = (ExposeOnSpawn = true)) float Limit;
     public : UPROPERTY(EditAnywhere , BlueprintReadWrite , meta = (ExposeOnSpawn = true)) float Current;
+    public : UPROPERTY(EditAnywhere , BlueprintReadWrite , meta = (ExposeOnSpawn = true)) bool bAssignInvincibilityDurationToTimer;
+    public : UPROPERTY(EditAnywhere , BlueprintReadWrite , meta = (ExposeOnSpawn = true)) float InvincibilityTimeDuration;
+    public : UPROPERTY(EditAnywhere , BlueprintReadWrite , meta = (ExposeOnSpawn = true)) float InvincibilityTimeTimer;
     public : UPROPERTY(BlueprintAssignable , BlueprintCallable) FOnDamagedDelegate OnDamagedDelegate;
     public : UPROPERTY(BlueprintAssignable , BlueprintCallable) FOnDiedDelegate OnDiedDelegate;
     public : UPROPERTY(BlueprintAssignable , BlueprintCallable) FOnHealedDelegate OnHealedDelegate;
@@ -40,8 +43,10 @@ UCLASS(ClassGroup=(Custom) , Blueprintable , meta=(BlueprintSpawnableComponent))
     //Methods
 
     public : UHealth();
-    public : UFUNCTION(BlueprintCallable) virtual void AssignLimitHealthToCurrent_Implementation();
-    public : UFUNCTION(BlueprintCallable , BlueprintNativeEvent) void AssignLimitHealthToCurrent();
+    public : UFUNCTION(BlueprintCallable) virtual void AssignHealthLimitToCurrent_Implementation();
+    public : UFUNCTION(BlueprintCallable , BlueprintNativeEvent) void AssignHealthLimitToCurrent();
+    public : UFUNCTION(BlueprintCallable) virtual void AssignInvincibilityDurationToTimer_Implementation();
+    public : UFUNCTION(BlueprintCallable , BlueprintNativeEvent) void AssignInvincibilityDurationToTimer();
     public : UFUNCTION(BlueprintCallable) virtual void Modify_Implementation
     (
         float InModifiedHealthAmount , bool bInNotifyAboutModification
