@@ -6,6 +6,15 @@
 #include "GameFramework/Character.h"
 #include "Character_Main.generated.h"
 
+/*
+USTRUCT(BlueprintType)
+struct FPlayerValue
+{
+	GENERATED_USTRUCT_BODY()
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+}*/
+
 UENUM()
 enum class EMovementState : uint8
 {
@@ -42,6 +51,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float BaseGravity = 1.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float ApexGravity = 2.f;
 	//Data
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|Walking")
 	float MaxWalkSpeed = 800.f;

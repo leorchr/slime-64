@@ -37,7 +37,7 @@ void ACharacter_Main::BeginPlay()
 	movement->MaxWalkSpeed = MaxWalkSpeed;
 	movement->MaxAcceleration = MaxWalkAcceleration;
 	movement->JumpZVelocity = JumpForce;
-	movement->bNotifyApex = true;
+	
 }
 
 
@@ -72,6 +72,8 @@ void ACharacter_Main::Landed(const FHitResult& Hit)
 	Super::Landed(Hit);
 	JumpCounter = JumpNumber;
 
+	movement->GravityScale = BaseGravity;
+
 	if (lastMoveDir.Length() == 0) {
 		setNewState(EMovementState::Idle);
 	}
@@ -83,6 +85,7 @@ void ACharacter_Main::Landed(const FHitResult& Hit)
 void ACharacter_Main::OnJumped_Implementation()
 {
 	Super::OnJumped_Implementation();
+	movement->bNotifyApex = true;
 	JumpCounter--;
 	setNewState(EMovementState::Jumping);
 }
@@ -103,7 +106,9 @@ bool ACharacter_Main::CanJumpInternal_Implementation() const
 
 void ACharacter_Main::NotifyJumpApex()
 {
+	Super::NotifyJumpApex();
 	setNewState(EMovementState::Falling);
+	movement->GravityScale = ApexGravity;
 }
 
 void ACharacter_Main::Move(FVector2d Direction)
