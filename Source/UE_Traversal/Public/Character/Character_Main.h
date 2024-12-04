@@ -6,6 +6,15 @@
 #include "GameFramework/Character.h"
 #include "Character_Main.generated.h"
 
+/*
+USTRUCT(BlueprintType)
+struct FPlayerValue
+{
+	GENERATED_USTRUCT_BODY()
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+}*/
+
 UENUM()
 enum class EMovementState : uint8
 {
@@ -35,6 +44,9 @@ public:
 
 	bool bIsRunning;
 
+	UFUNCTION()
+	void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,6 +54,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float BaseGravity = 1.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float ApexGravity = 2.f;
 	//Data
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|Walking")
 	float MaxWalkSpeed = 800.f;
@@ -63,9 +77,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
 	float WallGlidingGravity = 0.2f;
 
-	void setNewState(EMovementState newState);
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	float minimalVelocitToStick= 300.f;
 
+	void setNewState(EMovementState newState);
+	
+	// Orb
+	class AAttractOrb *Orb = nullptr;
+	
 public:	
+	void AttachToOrb(class AAttractOrb *NewOrb);
+	void DetachFromOrb();
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
