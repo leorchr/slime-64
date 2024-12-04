@@ -53,5 +53,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
 	float EndZone = 1.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Camera|FOV")
+	float WalkingFOV = 90.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|FOV")
+	float RunningFOV = 100.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|FOV")
+	float FOVLag = 0.1f;
+
 	bool SeekPlayer = false;
 };
