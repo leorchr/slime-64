@@ -23,7 +23,8 @@ enum class EMovementState : uint8
 	Running,
 	WallSliding,
 	Jumping,
-	Falling
+	Falling,
+	Hooked
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStateChange, EMovementState, OldState, EMovementState, NewState);
@@ -79,6 +80,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
 	float minimalVelocitToStick= 300.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	float InclinaisonToleranceStick = 0.17f;
 
 	void setNewState(EMovementState newState);
 	

@@ -40,9 +40,10 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 {
 	float dPrdct = FVector::DotProduct(Hit.Normal, FVector::UpVector);
 	UE_LOG(LogTemp, Log, TEXT("Hit Something | Normal : %f"), dPrdct);
-	if (dPrdct < 0.05 && dPrdct > -0.05) {
+	if (dPrdct < InclinaisonToleranceStick && dPrdct > -InclinaisonToleranceStick) {
 		movement->GravityScale = 0;
-		movement->Velocity.Z = 0;
+		movement->Velocity = FVector::Zero();
+		setNewState(EMovementState::WallSliding);
 	}
 	
 }
@@ -75,6 +76,7 @@ void ACharacter_Main::AttachToOrb(AAttractOrb* NewOrb)
 	Orb = NewOrb;
 	JumpCounter = FMath::Max(1, JumpCounter);
 	movement->GravityScale = 0.0;
+	setNewState(EMovementState::Hooked);
 }
 
 void ACharacter_Main::DetachFromOrb()
@@ -82,8 +84,10 @@ void ACharacter_Main::DetachFromOrb()
 	if (Orb != nullptr)
 	{
 		movement->GravityScale = BaseGravity;
+		setNewState(EMovementState::Jumping);
 	}
 	Orb = nullptr;	
+	
 }
 
 // Called every frame
@@ -154,39 +158,45 @@ void ACharacter_Main::NotifyJumpApex()
 void ACharacter_Main::Move(FVector2d Direction)
 {
 	lastMoveDir = Direction;
-	if (Direction.Y != 0.f) {
-		FVector3d cameraForward = Camera->GetForwardVector();
-		cameraForward.Z = 0;
-		cameraForward.Normalize();
-		const FVector3d dir = cameraForward * Direction.Y;
-		AddMovementInput(dir);
+	if (currentState != EMovementState::WallSliding) 
+	{
+		if (Direction.Y != 0.f) {
+			FVector3d cameraForward = Camera->GetForwardVector();
+			cameraForward.Z = 0;
+			cameraForward.Normalize();
+			const FVector3d dir = cameraForward * Direction.Y;
+			AddMovementInput(dir);
 
 		
-	}
-	if (Direction.X != 0.f) {
-		FVector3d cameraRight = Camera->GetRightVector();
-		cameraRight.Z = 0;
-		cameraRight.Normalize();
-		const FVector3d dir = cameraRight * Direction.X;
-		AddMovementInput(dir);
-	}
+		}
+		if (Direction.X != 0.f) {
+			FVector3d cameraRight = Camera->GetRightVector();
+			cameraRight.Z = 0;
+			cameraRight.Normalize();
+			const FVector3d dir = cameraRight * Direction.X;
+			AddMovementInput(dir);
+		}
 
 
 
-	//Stopped Giving Movement
-	if (Direction.Length() == 0) {
-		if (!movement->IsFalling() && currentState != EMovementState::Idle) {
-			setNewState(EMovementState::Idle);
+		//Stopped Giving Movement
+		if (Direction.Length() == 0) {
+			if (!movement->IsFalling() && currentState != EMovementState::Idle) {
+				setNewState(EMovementState::Idle);
+			}
+		}
+		else {
+			if (!movement->IsFalling()) {
+				EMovementState nState = bIsRunning ? EMovementState::Running : EMovementState::Walking;
+				if (nState != currentState) {
+					setNewState(nState);
+				}
+			}
+		
 		}
 	}
 	else {
-		if (!movement->IsFalling()) {
-			EMovementState nState = bIsRunning ? EMovementState::Running : EMovementState::Walking;
-			if (nState != currentState) {
-				setNewState(nState);
-			}
-		}
-		
+
 	}
 }
 
