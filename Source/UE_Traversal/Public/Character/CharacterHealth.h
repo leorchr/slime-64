@@ -34,6 +34,9 @@ private:
 			   UPrimitiveComponent* OtherComp, FVector NormalImpulse,
 			   const FHitResult& Hit);
 
+	UFUNCTION(BlueprintCallable)
+	void AddHeart();
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	int health = 3;
