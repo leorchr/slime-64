@@ -25,14 +25,23 @@ private:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	FVector GetPredictLocation();
+	FRotator GetRotation(float DeltaTime);
 	
 	class ACharacter_Main *Character = nullptr;
 	class USpringArmComponent *BoomStick = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
-	float RotationLag = 8.0f;
+	float RotationInputLag = 8.0f;
 	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
-	float PositionLag = 8.0f;
+	float OrientationLag = 1.0f;
 	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
-	float ForwardDelta = 8.0f;
+	float PositionLag = 2.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
+	float ForwardDelta = 1.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
+	float StartZone = 200.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
+	float EndZone = 1.0f;
+
+	bool SeekPlayer = false;
 };
