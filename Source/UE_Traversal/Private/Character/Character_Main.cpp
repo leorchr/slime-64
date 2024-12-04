@@ -42,6 +42,14 @@ void ACharacter_Main::BeginPlay()
 
 
 
+void ACharacter_Main::setNewState(EMovementState newState)
+{
+	OnStateChange.Broadcast(currentState, newState);
+	currentState = newState;
+	const FString Message = UEnum::GetValueAsString(newState);
+	UE_LOG(LogTemp,Log,TEXT("New State : %s"),*Message)
+}
+
 // Called every frame
 void ACharacter_Main::Tick(float DeltaTime)
 {
@@ -57,48 +65,94 @@ void ACharacter_Main::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 }
 
 
-
-void ACharacter_Main::OnLanded(const FHitResult& Hit)
+void ACharacter_Main::Landed(const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Log, TEXT("Has Lnded"));
+	Super::Landed(Hit);
+	JumpCounter = JumpNumber;
+	if (movement->Velocity.Length() == 0) {
+		setNewState(EMovementState::Idle);
+	}
+	else {
+		setNewState(bIsRunning ? EMovementState::Running : EMovementState::Walking);
+	}
 }
+
+void ACharacter_Main::OnJumped_Implementation()
+{
+	UE_LOG(LogTemp, Log, TEXT("Jumpes"))
+	Super::OnJumped_Implementation();
+	JumpCounter--;
+	setNewState(EMovementState::Jumping);
+}
+
 
 bool ACharacter_Main::CanJumpInternal_Implementation() const
 {
-	bool groundResult = Super::CanJumpInternal_Implementation();
+	bool bGroundResult = Super::CanJumpInternal_Implementation();
+
+	if (!bGroundResult) 
+	{
+		return JumpCounter > 0;
+	}
 
 
+	return true;
+}
 
-	return groundResult;
+void ACharacter_Main::NotifyJumpApex()
+{
 }
 
 void ACharacter_Main::Move(FVector2d Direction)
 {
 	if (Direction.Y != 0.f) {
 		FVector3d cameraForward = Camera->GetForwardVector();
+		cameraForward.Z = 0;
+		cameraForward.Normalize();
 		const FVector3d dir = cameraForward * Direction.Y;
 		AddMovementInput(dir);
+
+		
 	}
 	if (Direction.X != 0.f) {
 		FVector3d cameraRight = Camera->GetRightVector();
+		cameraRight.Z = 0;
+		cameraRight.Normalize();
 		const FVector3d dir = cameraRight * Direction.X;
 		AddMovementInput(dir);
 	}
+
+
+
 	//Stopped Giving Movement
 	if (Direction.Length() == 0) {
-
+		if (!movement->IsFalling() && currentState != EMovementState::Idle) {
+			setNewState(EMovementState::Idle);
+		}
+	}
+	else {
+		EMovementState nState = bIsRunning ? EMovementState::Running : EMovementState::Walking;
+		if (nState != currentState) {
+			setNewState(nState);
+		}
 	}
 }
 
 void ACharacter_Main::Run(bool RunToggle)
 {
-	
+	bIsRunning = RunToggle;
 	if (RunToggle) {
 		movement->MaxWalkSpeed = MaxRunSpeed;
 		movement->MaxAcceleration = MaxRunAcceleration;
+		if (!movement->IsFalling() && movement->Velocity.Length() > 10) {
+			setNewState(EMovementState::Running);
+		}
 	}
 	else {
 		movement->MaxWalkSpeed = MaxWalkSpeed;
 		movement->MaxAcceleration = MaxWalkAcceleration;
+		if (!movement->IsFalling() && movement->Velocity.Length() > 10) {
+			setNewState(EMovementState::Walking);
+		}
 	}
 }

@@ -7,17 +7,17 @@
 #include "Character_Main.generated.h"
 
 UENUM()
-enum class MovementState : uint8
+enum class EMovementState : uint8
 {
+	Idle,
 	Walking,
 	Running,
 	WallSliding,
 	Jumping,
-	Falling,
-	MAX UMETA(Hidden)
+	Falling
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStateChange, MovementState, OldState, MovementState, NewState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStateChange, EMovementState, OldState, EMovementState, NewState);
 
 UCLASS()
 class UE_TRAVERSAL_API ACharacter_Main : public ACharacter
@@ -30,6 +30,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnStateChange OnStateChange;
+
+	EMovementState currentState = EMovementState::Idle;
+
+	bool bIsRunning;
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,11 +56,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|Jump")
 	float JumpForce = 1200.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|Jump")
-	int AdditionalJump = 1;
-	int jumpCounter = AdditionalJump;
+	int JumpNumber = 2;
+
+	int JumpCounter = JumpNumber;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
 	float WallGlidingGravity = 0.2f;
+
+	void setNewState(EMovementState newState);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -73,9 +81,13 @@ public:
 
 	UCharacterMovementComponent* movement = nullptr;
 
-	void OnLanded(const FHitResult& Hit);
+	void Landed(const FHitResult& Hit) override;
+
+	virtual void OnJumped_Implementation() override;
 
 	virtual bool CanJumpInternal_Implementation() const override;
+
+	virtual void NotifyJumpApex() override;
 
 	void Move(FVector2d Direction);
 	void Run(bool RunToggle);
