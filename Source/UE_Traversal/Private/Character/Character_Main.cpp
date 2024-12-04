@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Actor.h"
 #include "Components/CapsuleComponent.h"
+#include "Gameplay/AttractOrb.h"
 
 // Sets default values
 ACharacter_Main::ACharacter_Main(const FObjectInitializer& ObjectInitializer)
@@ -68,11 +69,32 @@ void ACharacter_Main::setNewState(EMovementState newState)
 	}
 }
 
+
+void ACharacter_Main::AttachToOrb(AAttractOrb* NewOrb)
+{
+	Orb = NewOrb;
+	JumpCounter = FMath::Max(1, JumpCounter);
+	movement->GravityScale = 0.0;
+}
+
+void ACharacter_Main::DetachFromOrb()
+{
+	if (Orb != nullptr)
+	{
+		movement->GravityScale = BaseGravity;
+	}
+	Orb = nullptr;	
+}
+
 // Called every frame
 void ACharacter_Main::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (Orb)
+	{
+		Orb->Attract(this, DeltaTime);
+	}
 }
 
 // Called to bind functionality to input
@@ -100,6 +122,8 @@ void ACharacter_Main::Landed(const FHitResult& Hit)
 
 void ACharacter_Main::OnJumped_Implementation()
 {
+	DetachFromOrb();
+	
 	Super::OnJumped_Implementation();
 	movement->bNotifyApex = true;
 	JumpCounter--;

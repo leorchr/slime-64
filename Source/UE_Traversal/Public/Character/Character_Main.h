@@ -81,8 +81,14 @@ protected:
 	float minimalVelocitToStick= 300.f;
 
 	void setNewState(EMovementState newState);
-
+	
+	// Orb
+	class AAttractOrb *Orb = nullptr;
+	
 public:	
+	void AttachToOrb(class AAttractOrb *NewOrb);
+	void DetachFromOrb();
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
