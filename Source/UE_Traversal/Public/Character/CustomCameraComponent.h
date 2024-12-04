@@ -58,7 +58,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Camera|FOV")
 	float RunningFOV = 100.0f;
 	UPROPERTY(EditAnywhere, Category = "Camera|FOV")
-	float FOVLag = 0.1f;
+	float FOVLerp = 0.1f;
+	
+	UPROPERTY(EditAnywhere, Category = "Camera|Spring")
+	float WalkingSpringLength = 450.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|Spring")
+	float RunningSpringLength = 500.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|Spring")
+	float SpringLengthLerp = 0.01f;
 
 	bool SeekPlayer = false;
 };

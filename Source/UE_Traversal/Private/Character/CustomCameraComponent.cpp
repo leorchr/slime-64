@@ -37,10 +37,12 @@ void UCustomCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	if (Character->bIsRunning)
 	{
 		PositionLag = PositionRunningLag;
-		SetFieldOfView(FMath::Lerp(FieldOfView, RunningFOV, FOVLag));
+		SetFieldOfView(FMath::Lerp(FieldOfView, RunningFOV, FOVLerp));
+		BoomStick->TargetArmLength = FMath::Lerp(BoomStick->TargetArmLength, RunningSpringLength, SpringLengthLerp);
 	} else {
 		PositionLag = PositionWalkingLag;
-		SetFieldOfView(FMath::Lerp(FieldOfView, WalkingFOV, FOVLag));
+		SetFieldOfView(FMath::Lerp(FieldOfView, WalkingFOV, FOVLerp));
+		BoomStick->TargetArmLength = FMath::Lerp(BoomStick->TargetArmLength, WalkingSpringLength, SpringLengthLerp);
 	}
 	
 	if (Character->movement->IsFalling())
