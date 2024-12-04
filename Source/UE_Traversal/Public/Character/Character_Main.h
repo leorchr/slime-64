@@ -28,6 +28,7 @@ public:
 	// Sets default values for this character's properties
 	ACharacter_Main(const FObjectInitializer& ObjectInitializer);
 
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnStateChange OnStateChange;
 
 protected:
