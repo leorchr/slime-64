@@ -37,6 +37,7 @@ void UCustomCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		PositionLag = PositionJumpingLag;
 		BoomStick->SetWorldLocation(FMath::VInterpTo(BoomStick->GetComponentLocation(), Character->GetActorLocation(), DeltaTime, PositionLag));
+		Character->AddControllerPitchInput(GetPitch(DeltaTime) * PitchLag);
 	} else
 	{
 		PositionLag = PositionWalkingLag;
@@ -54,9 +55,10 @@ void UCustomCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		if (SeekPlayer)
 		{
 			BoomStick->SetWorldLocation(FMath::VInterpTo(BoomStick->GetComponentLocation(), GetPredictLocation(), DeltaTime, PositionLag));
-			Character->AddControllerYawInput(GetRotation(DeltaTime).Yaw);
 		}
 	}
+	
+	Character->AddControllerYawInput(GetYaw(DeltaTime) * YawLag);
 }
 
 FVector UCustomCameraComponent::GetPredictLocation()
@@ -74,20 +76,32 @@ FVector UCustomCameraComponent::GetPredictLocation()
 	return Location;
 }
 
-FRotator UCustomCameraComponent::GetRotation(float DeltaTime)
+double UCustomCameraComponent::GetYaw(float DeltaTime)
 {
-	
 	FRotator RequiredRotator = FQuat::FindBetweenVectors(GetForwardVector(), Character->GetVelocity().GetSafeNormal()).Rotator();
-	float RotationStrength = 0.0001 + OrientationLag * FMath::Abs(FVector::DotProduct(GetRightVector().GetSafeNormal(), Character->GetVelocity().GetSafeNormal()));
+	float RotationStrength = 0.0001 + FMath::Abs(FVector::DotProduct(GetRightVector().GetSafeNormal(), Character->GetVelocity().GetSafeNormal()));
 	RotationStrength *= Character->GetVelocity().Length() / Character->movement->MaxWalkSpeed;
 	FRotator Rotation = FMath::RInterpTo(FRotator::ZeroRotator, RequiredRotator, DeltaTime, RotationStrength);
-	return Rotation;
+	return Rotation.Yaw;
+}
+
+double UCustomCameraComponent::GetPitch(float DeltaTime)
+{
+	FRotator RequiredRotator = FQuat::FindBetweenVectors(GetForwardVector(), Character->GetVelocity().GetSafeNormal()).Rotator();
+
+	float RotationStrength = 0.0001 + FMath::Abs(FVector::DotProduct(-GetUpVector().GetSafeNormal(), Character->GetVelocity().GetSafeNormal()));
+	RotationStrength *= Character->GetVelocity().Length() / Character->movement->MaxWalkSpeed;
+	FRotator Rotation = FMath::RInterpTo(FRotator::ZeroRotator, RequiredRotator, DeltaTime, RotationStrength);
+	return (Character->GetVelocity().Z * Rotation.Pitch > 0) ? -Rotation.Pitch : Rotation.Pitch;
 }
 
 void UCustomCameraComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (BoomStick && Character)
+		BoomStick->SetWorldLocation(Character->GetActorLocation());
+	
 	bUsePawnControlRotation = false;
 
 	Character = Cast<ACharacter_Main>(GetOwner());
