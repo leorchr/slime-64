@@ -10,7 +10,6 @@
 #include "InputActionValue.h"
 #include "Character/Character_Main.h"
 #include "Blueprint/UserWidget.h"
-#include "UI/PauseMenu.h"
 
 void AController_Main::SetupInputComponent()
 {
