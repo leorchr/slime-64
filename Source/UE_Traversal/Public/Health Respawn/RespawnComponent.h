@@ -24,7 +24,7 @@ protected:
 	/*UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	ACheckpoint* CurrentCheckpoint = nullptr;*/
 
-	UPROPERTY(EditDefaultsOnly,meta=(ClampMin="0.2",ClampMax="30.0"),BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly,meta=(ClampMin="0.2",ClampMax="30.0"),BlueprintReadWrite)
 	float RespawnDelay = 2.f;
 	
 

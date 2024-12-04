@@ -34,8 +34,19 @@ void UCharacterHealth::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 		health--;
 		OnHealthChanged.Broadcast(health);
 	}
+	//UE_LOG(LogTemp,Log,TEXT("health %d"),health);
 	if(health <= 0)
 	{
 		OnGameOver.Broadcast();
 	}
+}
+
+void UCharacterHealth::AddHeart()
+{
+	if(health < 3)
+	{
+		health++;
+		OnHealthChanged.Broadcast(health);
+	}
+	else UE_LOG(LogTemp,Log,TEXT("Already maximum health"));
 }
