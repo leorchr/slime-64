@@ -11,6 +11,15 @@ void UHealth::TickComponent(float DeltaTime , ELevelTick TickType , FActorCompon
 {
 	    Super::TickComponent(DeltaTime , TickType , ThisTickFunction);
      InvincibilityTimeTimer += DeltaTime;
+     if(Current <= 0.0F)
+     {
+         TimeBeforeBlackScreenTimer += DeltaTime;
+         if(TimeBeforeBlackScreenTimer >= TimeBeforeBlackScreenDuration)
+         {
+            InvincibilityTimeTimer = -1'000'000'000.F;
+            OnGotBlackScreenDelegate.Broadcast(this);
+         }
+     }
 }
 
 UHealth::UHealth()
@@ -22,6 +31,9 @@ UHealth::UHealth()
     bAssignInvincibilityDurationToTimer = true;
     InvincibilityTimeDuration = 2.0F;
     AssignInvincibilityDurationToTimer_Implementation();
+    bAssignTimeBeforeBlackScreenDurationToTimer = false;
+    TimeBeforeBlackScreenDuration = 3.0F;
+    AssignTimeBeforeBlackScreenDurationToTimer_Implementation();
 }
 
 void UHealth::AssignHealthLimitToCurrent_Implementation()
@@ -37,6 +49,14 @@ void UHealth::AssignInvincibilityDurationToTimer_Implementation()
     if(bAssignInvincibilityDurationToTimer)
     {
         InvincibilityTimeTimer = InvincibilityTimeDuration;
+    }
+}
+
+void UHealth::AssignTimeBeforeBlackScreenDurationToTimer_Implementation()
+{
+    if(bAssignTimeBeforeBlackScreenDurationToTimer)
+    {
+        TimeBeforeBlackScreenTimer = TimeBeforeBlackScreenDuration;
     }
 }
 
