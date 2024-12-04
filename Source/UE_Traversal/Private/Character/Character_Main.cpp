@@ -272,7 +272,7 @@ void ACharacter_Main::CharacterJump()
 		Jump();
 	}
 	else {
-		FVector WallJumpForce =  lastWallNormal.ForwardVector * HorizontalWallJumpForce + lastWallNormal.UpVector * VerticalWallJumpForce;
+		FVector WallJumpForce =  FVector(lastWallNormal.X * HorizontalWallJumpForce, lastWallNormal.Y * HorizontalWallJumpForce, VerticalWallJumpForce);
 		movement->AddImpulse(WallJumpForce,true);
 		setNewState(EMovementState::Jumping);
 		movement->bNotifyApex = true;

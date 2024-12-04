@@ -55,33 +55,35 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float BaseGravity = 1.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float ApexGravity = 2.f;
 	//Data
-	UPROPERTY(EditDefaultsOnly, Category = "Movement|Walking")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Walking")
 	float MaxWalkSpeed = 800.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Movement|Walking")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Walking")
 	float MaxWalkAcceleration = 800.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Movement|Running")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Running")
 	float MaxRunSpeed = 1200.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Movement|Running")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Running")
 	float MaxRunAcceleration = 1200.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Movement|Jump")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Jump")
 	float JumpForce = 1200.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Jump")
+	float SecondJumpForce = 1200.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|Jump")
 	int JumpNumber = 2;
 
 	int JumpCounter = JumpNumber;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|WallSliding")
 	float WallGlidingGravity = 0.2f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|WallSliding")
 	float minimalVelocitToStick= 300.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
@@ -89,11 +91,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
 	float WallUnstickTolerance = 0.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|WallSliding")
 	float TimeToUnstick = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|WallSliding")
 	float VerticalWallJumpForce = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|WallSliding")
 	float HorizontalWallJumpForce = 1.f;
 	float StickyTimer = TimeToUnstick;
 
