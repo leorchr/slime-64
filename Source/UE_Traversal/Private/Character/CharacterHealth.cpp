@@ -29,6 +29,8 @@ void UCharacterHealth::ResetHealth()
 
 void UCharacterHealth::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	//UE_LOG(LogTemp, Warning, TEXT("HIT"));
+	if(!OtherActor->ActorHasTag("Enemy")) return;
 	if(health > 0)
 	{
 		health--;
