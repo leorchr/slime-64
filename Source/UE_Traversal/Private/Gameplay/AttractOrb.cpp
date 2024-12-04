@@ -50,6 +50,6 @@ void AAttractOrb::Attract(ACharacter_Main* Character, float DeltaTime)
 {
 	AttractTime += DeltaTime;
 	if (!OrbAttractionCurve) return;
-	double AttractLerp = FMath::Clamp(OrbAttractionCurve->GetFloatValue(DeltaTime), -1.0, 1.0);
+	double AttractLerp = FMath::Clamp(OrbAttractionCurve->GetFloatValue(AttractTime), -1.0, 1.0);
 	Character->SetActorLocation(UE::Geometry::Lerp(Character->GetActorLocation(), GetActorLocation(), AttractLerp));
 }
