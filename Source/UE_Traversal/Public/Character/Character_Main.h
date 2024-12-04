@@ -21,6 +21,7 @@ enum class EMovementState : uint8
 	Idle,
 	Walking,
 	Running,
+	WallSticked,
 	WallSliding,
 	Jumping,
 	Falling,
@@ -44,6 +45,8 @@ public:
 	EMovementState currentState = EMovementState::Idle;
 
 	bool bIsRunning;
+
+	FVector lastWallNormal;
 
 	UFUNCTION()
 	void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
@@ -83,6 +86,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
 	float InclinaisonToleranceStick = 0.17f;
+	UPROPERTY(EditDefaultsOnly, Category = "Movement|WallSliding")
+	float TimeToUnstick = 1.f;
+	float StickyTimer = TimeToUnstick;
 
 	void setNewState(EMovementState newState);
 	

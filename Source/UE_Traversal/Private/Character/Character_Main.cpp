@@ -40,10 +40,22 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 {
 	float dPrdct = FVector::DotProduct(Hit.Normal, FVector::UpVector);
 	UE_LOG(LogTemp, Log, TEXT("Hit Something | Normal : %f"), dPrdct);
-	if (dPrdct < InclinaisonToleranceStick && dPrdct > -InclinaisonToleranceStick) {
+	if (dPrdct < InclinaisonToleranceStick && dPrdct > -InclinaisonToleranceStick && movement->IsFalling() && !OtherActor->ActorHasTag(FName(TEXT("Unstickable"))))
+	{
+		setNewState(EMovementState::WallSticked);
+		if (movement->Velocity.Length() > minimalVelocitToStick) {
+			StickyTimer = TimeToUnstick;
+		}
+		else
+		{
+			StickyTimer = 0;
+		}
 		movement->GravityScale = 0;
 		movement->Velocity = FVector::Zero();
-		setNewState(EMovementState::WallSliding);
+		
+		JumpCounter = FMath::Max(1,JumpCounter);
+
+		movement->bNotifyApex = false;
 	}
 	
 }
@@ -99,6 +111,14 @@ void ACharacter_Main::Tick(float DeltaTime)
 	{
 		Orb->Attract(this, DeltaTime);
 	}
+
+	if (currentState == EMovementState::WallSticked && StickyTimer != 0) {
+		StickyTimer = FMath::Clamp(StickyTimer - DeltaTime, 0, TimeToUnstick);
+		if (StickyTimer == 0) {
+			movement->GravityScale = WallGlidingGravity;
+			setNewState(EMovementState::WallSliding);
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -129,6 +149,7 @@ void ACharacter_Main::OnJumped_Implementation()
 	DetachFromOrb();
 	
 	Super::OnJumped_Implementation();
+	movement->GravityScale = BaseGravity;
 	movement->bNotifyApex = true;
 	JumpCounter--;
 	setNewState(EMovementState::Jumping);
@@ -158,7 +179,7 @@ void ACharacter_Main::NotifyJumpApex()
 void ACharacter_Main::Move(FVector2d Direction)
 {
 	lastMoveDir = Direction;
-	if (currentState != EMovementState::WallSliding) 
+	if (currentState != EMovementState::WallSliding && currentState != EMovementState::WallSticked)
 	{
 		if (Direction.Y != 0.f) {
 			FVector3d cameraForward = Camera->GetForwardVector();
@@ -196,7 +217,23 @@ void ACharacter_Main::Move(FVector2d Direction)
 		}
 	}
 	else {
+		FVector dirWished = FVector::Zero();
+		if (Direction.Y != 0.f) {
+			FVector3d cameraForward = Camera->GetForwardVector();
+			cameraForward.Z = 0;
+			cameraForward.Normalize();
+			const FVector3d dir = cameraForward * Direction.Y;
+			dirWished += dir;
 
+
+		}
+		if (Direction.X != 0.f) {
+			FVector3d cameraRight = Camera->GetRightVector();
+			cameraRight.Z = 0;
+			cameraRight.Normalize();
+			const FVector3d dir = cameraRight * Direction.X;
+			AddMovementInput(dir);
+		}
 	}
 }
 
