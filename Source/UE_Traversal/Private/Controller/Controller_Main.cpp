@@ -9,6 +9,8 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "Character/Character_Main.h"
+#include "Blueprint/UserWidget.h"
+#include "UI/PauseMenu.h"
 
 void AController_Main::SetupInputComponent()
 {
@@ -24,11 +26,15 @@ void AController_Main::SetupInputComponent()
 		return;
 	inputComponent->ClearActionBindings();
 	inputComponent->BindAction(inputActionMove, ETriggerEvent::Triggered, this, &AController_Main::MovePlayer);
+	inputComponent->BindAction(inputActionMove, ETriggerEvent::Completed, this, &AController_Main::MovePlayer);
+	inputComponent->BindAction(inputActionMove, ETriggerEvent::Canceled, this, &AController_Main::MovePlayer);
 	inputComponent->BindAction(inputActionRun, ETriggerEvent::Started, this, &AController_Main::Run);
 	inputComponent->BindAction(inputActionRun, ETriggerEvent::Completed, this, &AController_Main::Run);
 	inputComponent->BindAction(inputActionRun, ETriggerEvent::Canceled, this, &AController_Main::Run);
 	inputComponent->BindAction(inputActionJump, ETriggerEvent::Started, this, &AController_Main::Jump);
 	inputComponent->BindAction(inputActionLook, ETriggerEvent::Triggered, this, &AController_Main::Rotate);
+	inputComponent->BindAction(inputActionPause, ETriggerEvent::Triggered, this, &AController_Main::PauseMenu);
+
 }
 
 void AController_Main::SetPawn(APawn* InPawn)

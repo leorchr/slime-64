@@ -31,10 +31,16 @@ protected:
 	class UInputAction* inputActionRun;
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput|Look")
 	class UInputAction* inputActionLook;
+	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput|Pause")
+	class UInputAction* inputActionPause;
 
 	//Movement Functions
 	void MovePlayer(const struct FInputActionValue& value);
 	void Jump(const struct FInputActionValue& value);
 	void Run(const struct FInputActionValue& value);
 	void Rotate(const struct FInputActionValue& value);
+
+	//Pause Function
+	UFUNCTION(BlueprintImplementableEvent)
+	void PauseMenu(const struct FInputActionValue& value);
 };
