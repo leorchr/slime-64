@@ -35,7 +35,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
 	float OrientationLag = 1.0f;
 	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
-	float PositionLag = 2.0f;
+	float PositionWalkingLag = 3.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
+	float PositionRunningLag = 10.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
+	float PositionJumpingLag = 20.0f;
+
+	float PositionLag = PositionWalkingLag;
+	
 	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
 	float ForwardDelta = 1.0f;
 	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
