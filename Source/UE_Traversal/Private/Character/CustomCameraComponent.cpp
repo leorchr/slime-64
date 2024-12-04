@@ -33,6 +33,16 @@ void UCustomCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	if (!BoomStick) return;
 
 	float Offset = FVector::Dist(BoomStick->GetComponentLocation(), Character->GetActorLocation());
+
+	if (Character->bIsRunning)
+	{
+		PositionLag = PositionRunningLag;
+		SetFieldOfView(FMath::Lerp(FieldOfView, RunningFOV, FOVLag));
+	} else {
+		PositionLag = PositionWalkingLag;
+		SetFieldOfView(FMath::Lerp(FieldOfView, WalkingFOV, FOVLag));
+	}
+	
 	if (Character->movement->IsFalling())
 	{
 		PositionLag = PositionJumpingLag;
@@ -40,8 +50,6 @@ void UCustomCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		Character->AddControllerPitchInput(GetPitch(DeltaTime) * PitchLag);
 	} else
 	{
-		PositionLag = PositionWalkingLag;
-		
 		if (Offset < EndZone)
 		{
 			SeekPlayer = false;

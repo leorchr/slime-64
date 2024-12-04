@@ -27,7 +27,7 @@ void AController_Main::SetupInputComponent()
 	inputComponent->BindAction(inputActionRun, ETriggerEvent::Started, this, &AController_Main::Run);
 	inputComponent->BindAction(inputActionRun, ETriggerEvent::Completed, this, &AController_Main::Run);
 	inputComponent->BindAction(inputActionRun, ETriggerEvent::Canceled, this, &AController_Main::Run);
-	inputComponent->BindAction(inputActionJump, ETriggerEvent::Triggered, this, &AController_Main::Jump);
+	inputComponent->BindAction(inputActionJump, ETriggerEvent::Started, this, &AController_Main::Jump);
 	inputComponent->BindAction(inputActionLook, ETriggerEvent::Triggered, this, &AController_Main::Rotate);
 }
 
