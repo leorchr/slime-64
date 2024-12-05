@@ -341,7 +341,13 @@ void ACharacter_Main::CharacterJump()
 		else {
 			movement->JumpZVelocity = SecondJumpForce;
 			if (CanJumpInternal_Implementation()) {
-				movement->Velocity = FVector::Zero();
+				if (lastMoveDir.Length() > 0.1) {
+					FVector vel = movement->Velocity;
+					vel.Z = 0;
+					float spd = vel.Length();
+					FVector trueDir = lastMoveDir.Y * Camera->GetForwardVector() + lastMoveDir.X * Camera->GetRightVector();
+					movement->Velocity = FVector(trueDir.X * spd, trueDir.Y * spd, movement->Velocity.Z);
+				}
 			}
 		}
 		Jump();
