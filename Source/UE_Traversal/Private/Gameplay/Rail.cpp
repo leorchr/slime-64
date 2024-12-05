@@ -7,10 +7,13 @@
 #include "Character/Character_Main.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
+#include "Engine/StaticMeshActor.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/BlueprintTypeConversions.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Particles/Attractor/ParticleModuleAttractorBase.h"
 #include "Gameplay/AttractOrb.h"
+#include "Runtime/Renderer/Private/DistanceFieldAmbientOcclusion.h"
 
 // Called when the game starts or when spawned
 void ARail::BeginPlay()
@@ -53,15 +56,13 @@ ARail::ARail(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitiali
 	SetRootComponent(SplineComponent);
 }
 
-void ARail::OnBeginPlayerOverlap(ACharacter_Main* Character)
+void ARail::OnBeginPlayerOverlap()
 {
-	UE_LOG(LogTemp, Log, TEXT("BeginOverlap"));
 	FActorSpawnParameters SpawnParams;
 	Distance = SplineComponent->GetDistanceAlongSplineAtLocation(Character->GetActorLocation(), ESplineCoordinateSpace::World);
 	Orb = GetWorld()->SpawnActor<AAttractOrb>(OrbType, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 	
 	Orb->GetComponentByClass<UStaticMeshComponent>()->SetVisibility(false);
-	
 
 	FVector SplineVector = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
 	Direction = FVector::DotProduct(SplineVector, Character->GetVelocity());
@@ -70,7 +71,6 @@ void ARail::OnBeginPlayerOverlap(ACharacter_Main* Character)
 
 void ARail::OnEndPlayerOverlap()
 {
-	UE_LOG(LogTemp, Log, TEXT("EndOverlap"));
 	if (Orb)
 	{
 		Orb->Destroy();
@@ -83,23 +83,28 @@ void ARail::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AActor* OverlappingActor = FindOverlappingActor();
-	ACharacter_Main *Character = Cast<ACharacter_Main>(OverlappingActor);
 
-	if (Character != nullptr)
+	if (OverlappingActor != nullptr)
 	{
 		if (!bHit)
 		{
 			bHit = true;
-			OnBeginPlayerOverlap(Character);
+			Character = Cast<ACharacter_Main>(OverlappingActor);
+			OnBeginPlayerOverlap();
 		}
 		
 		if (Orb)
 		{
 			Distance += DeltaTime * RailSpeed * Direction;
+			Distance = FMath::Clamp(Distance, 0.0, SplineComponent->GetSplineLength());
 			Orb->SetActorLocation(SplineComponent->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World));
 			FVector SplineVector = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
 			Direction = FVector::DotProduct(SplineVector, Character->ActorForward);
 			Direction /= FMath::Abs(Direction);
+
+			Orb->Inertia = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World) * LaunchStrength;
+			Orb->Inertia.X *= Direction;
+			Orb->Inertia.Y *= Direction;
 		}
 	} else
 	{

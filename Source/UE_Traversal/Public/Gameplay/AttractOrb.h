@@ -22,6 +22,8 @@ public:
 	void Attract(class ACharacter_Main* Character, float DeltaTime);
 
 	bool bDeleteOnLeave = false;
+	FVector Inertia = FVector::ZeroVector;
+	
 protected:
 	virtual void BeginPlay();
 	float AttractTime = 0.0f;

@@ -15,12 +15,12 @@ public:
 	ARail(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION()
-	void OnBeginPlayerOverlap(class ACharacter_Main* Character);
+	void OnBeginPlayerOverlap();
 	UFUNCTION()
 	void OnEndPlayerOverlap();
 	
 	virtual void Tick(float DeltaTime) override;
-	
+
 protected:
 	virtual void BeginPlay() override;
 	AActor* FindOverlappingActor();
@@ -40,10 +40,13 @@ protected:
 	TSubclassOf<class ACharacter_Main> CharacterType;
 	bool bHit = false;
 	class AAttractOrb* Orb;
+	class ACharacter_Main* Character;
 
 	float Distance = 0;
 	float Direction = 1;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Rail")
-	float RailSpeed = 200.0f;
+	float RailSpeed = 900.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Rail")
+	float LaunchStrength = 900.0f;
 };

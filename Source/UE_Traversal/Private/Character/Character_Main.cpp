@@ -127,6 +127,7 @@ void ACharacter_Main::DetachFromOrb()
 	{
 		movement->GravityScale = BaseGravity;
 		setNewState(EMovementState::Jumping);
+		LaunchCharacter(Orb->Inertia, false, false);
 	}
 	Orb = nullptr;	
 	
