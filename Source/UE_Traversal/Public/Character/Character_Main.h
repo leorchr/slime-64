@@ -46,6 +46,7 @@ public:
 
 	bool bIsRunning;
 
+	UPROPERTY(BlueprintReadWrite)
 	FVector lastWallNormal;
 
 	UFUNCTION()
@@ -105,7 +106,14 @@ protected:
 	float CurrentManualUnstickTime = ManualUnstickTime;
 	float StickyTimer = TimeToUnstick;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float RotationSpeed = 30;
+
+	FRotator TargetForwardRotation;
+
 	void setNewState(EMovementState newState);
+
+	void setNewRotationForwardTarget(FVector target);
 	
 	// Orb
 	class AAttractOrb *Orb = nullptr;

@@ -37,6 +37,8 @@ ACharacter_Main::ACharacter_Main(const FObjectInitializer& ObjectInitializer)
 	}
 }
 
+
+
 void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	float dPrdct = FVector::DotProduct(Hit.Normal, FVector::UpVector);
@@ -61,9 +63,12 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 
 		movement->bNotifyApex = false;
 
-		FRotator newRot = UKismetMathLibrary::FindLookAtRotation(FVector::Zero(), lastWallNormal);
 
-		//blobMesh->SetWorldRotation(newRot);
+		FVector wNormalNoZ = lastWallNormal;
+		wNormalNoZ.Z = 0;
+		setNewRotationForwardTarget(wNormalNoZ);
+
+		
 	}
 	
 }
@@ -76,7 +81,13 @@ void ACharacter_Main::BeginPlay()
 	movement->MaxAcceleration = MaxWalkAcceleration;
 	movement->JumpZVelocity = JumpForce;
 	
-	//blobMesh =   GetComponentByClass<UStaticMeshComponent>();
+	TArray<UStaticMeshComponent*> Comps; 
+	GetComponents(Comps);
+	for (int i = 0; i < Comps.Num(); i++) {
+		if (Comps[i]->GetName() == "Blob") {
+			blobMesh = Comps[i];
+		}
+	}
 }
 
 
@@ -89,6 +100,15 @@ void ACharacter_Main::setNewState(EMovementState newState)
 		const FString Message = UEnum::GetValueAsString(newState);
 		UE_LOG(LogTemp, Log, TEXT("New State : %s"), *Message)
 	}
+}
+
+void ACharacter_Main::setNewRotationForwardTarget(FVector target)
+{
+	FRotator newRot = UKismetMathLibrary::FindLookAtRotation(FVector::Zero(), target);
+
+	newRot.Yaw -= 90;
+
+	TargetForwardRotation = newRot;
 }
 
 
@@ -128,6 +148,10 @@ void ACharacter_Main::Tick(float DeltaTime)
 			setNewState(EMovementState::WallSliding);
 		}
 	}
+
+
+	FRotator newRot = UKismetMathLibrary::RInterpTo(blobMesh->GetComponentRotation(), TargetForwardRotation, DeltaTime, RotationSpeed);
+	blobMesh->SetWorldRotation(newRot);
 }
 
 // Called to bind functionality to input
@@ -192,11 +216,13 @@ void ACharacter_Main::Move(FVector2d Direction)
 	lastMoveDir = Direction;
 	if (currentState != EMovementState::WallSliding && currentState != EMovementState::WallSticked)
 	{
+		FVector3d newDir = FVector::Zero();
 		if (Direction.Y != 0.f) {
 			FVector3d cameraForward = Camera->GetForwardVector();
 			cameraForward.Z = 0;
 			cameraForward.Normalize();
 			const FVector3d dir = cameraForward * Direction.Y;
+			newDir += dir;
 			AddMovementInput(dir);
 
 		
@@ -206,9 +232,12 @@ void ACharacter_Main::Move(FVector2d Direction)
 			cameraRight.Z = 0;
 			cameraRight.Normalize();
 			const FVector3d dir = cameraRight * Direction.X;
+			newDir += dir;
 			AddMovementInput(dir);
 		}
-
+		
+		newDir.Z = 0;
+		setNewRotationForwardTarget(newDir);
 
 
 		//Stopped Giving Movement
@@ -218,13 +247,14 @@ void ACharacter_Main::Move(FVector2d Direction)
 			}
 		}
 		else {
+			
 			if (!movement->IsFalling()) {
 				EMovementState nState = bIsRunning ? EMovementState::Running : EMovementState::Walking;
 				if (nState != currentState) {
 					setNewState(nState);
 				}
 			}
-		
+			
 		}
 	}
 	else {
