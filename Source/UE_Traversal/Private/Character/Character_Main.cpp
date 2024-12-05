@@ -202,6 +202,7 @@ void ACharacter_Main::OnJumped_Implementation()
 	
 	Super::OnJumped_Implementation();
 	movement->GravityScale = BaseGravity;
+	
 	movement->bNotifyApex = true;
 	JumpCounter--;
 	setNewState(EMovementState::Jumping);
@@ -339,6 +340,9 @@ void ACharacter_Main::CharacterJump()
 		}
 		else {
 			movement->JumpZVelocity = SecondJumpForce;
+			if (CanJumpInternal_Implementation()) {
+				movement->Velocity = FVector::Zero();
+			}
 		}
 		Jump();
 	}
