@@ -63,6 +63,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	class UStaticMeshComponent* blobMesh = nullptr;
+	class UStaticMeshComponent* leftEyeMesh = nullptr;
+	class UStaticMeshComponent* rightEyeMesh = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float BaseGravity = 1.f;
@@ -115,7 +117,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float RotationSpeed = 30;
 
+	float SpeedRatio = 1;
+
 	FRotator TargetForwardRotation;
+
+	FVector LeftEyeBasePos, RightEyeBasePos;
 
 	void setNewState(EMovementState newState);
 
@@ -132,7 +138,7 @@ public:
 
 	void Impulse(FVector dir);
 
-	void deformBasedOnVelocity(float angle);
+	void deformBasedOnVelocity();
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

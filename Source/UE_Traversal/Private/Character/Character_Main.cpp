@@ -87,6 +87,14 @@ void ACharacter_Main::BeginPlay()
 		if (Comps[i]->GetName() == "Blob") {
 			blobMesh = Comps[i];
 		}
+		if (Comps[i]->GetName() == "Sphere") {
+			LeftEyeBasePos = Comps[i]->GetRelativeLocation();
+			leftEyeMesh = Comps[i];
+		}
+		if (Comps[i]->GetName() == "Sphere1") {
+			RightEyeBasePos = Comps[i]->GetRelativeLocation();
+			rightEyeMesh = Comps[i];
+		}
 	}
 }
 
@@ -139,12 +147,27 @@ void ACharacter_Main::Impulse(FVector dir)
 	movement->AddImpulse(dir);
 }
 
-void ACharacter_Main::deformBasedOnVelocity(float angle)
+void ACharacter_Main::deformBasedOnVelocity()
 {
 	if (!SlimeDynamicMaterial) {
 		SlimeDynamicMaterial = UMaterialInstanceDynamic::Create(blobMesh->GetMaterial(0), blobMesh);
 	}
-	SlimeDynamicMaterial->SetScalarParameterValue("RotateAxis", angle);
+
+	float spd = movement->IsFalling() ? 0 : SpeedRatio;
+
+	SlimeDynamicMaterial->SetScalarParameterValue("SpeedMultiplier", spd );
+	FRotator meshRot = blobMesh->GetComponentRotation();
+	meshRot.Yaw += 90;
+
+	
+
+	SlimeDynamicMaterial->SetVectorParameterValue("ForwardVector", meshRot.Vector());
+
+	FVector fwd = FVector(0,1,0);
+
+	leftEyeMesh->SetRelativeLocation(LeftEyeBasePos + (fwd * 60 * spd) );
+	rightEyeMesh->SetRelativeLocation(RightEyeBasePos + (fwd * 60 * spd));
+
 	blobMesh->SetMaterial(0, SlimeDynamicMaterial);
 }
 
@@ -169,9 +192,13 @@ void ACharacter_Main::Tick(float DeltaTime)
 		}
 	}
 
+	FVector vel = movement->Velocity;
+	vel.Z = 0;
+	SpeedRatio = vel.Length() / MaxRunSpeed;
 
 	FRotator newRot = UKismetMathLibrary::RInterpTo(blobMesh->GetComponentRotation(), TargetForwardRotation, DeltaTime, RotationSpeed);
 	blobMesh->SetWorldRotation(newRot);
+	deformBasedOnVelocity();
 }
 
 // Called to bind functionality to input
