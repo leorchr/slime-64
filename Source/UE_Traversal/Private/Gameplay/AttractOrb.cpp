@@ -17,7 +17,7 @@ AAttractOrb::AAttractOrb(const FObjectInitializer& ObjectInitializer)
 	
 	SetRootComponent(CollisionSphere);
 	CollisionSphere->SetSphereRadius(100.0);
-	CollisionSphere->SetCollisionProfileName(TEXT("OverlapOnlyBlob"));
+	CollisionSphere->SetCollisionProfileName(TEXT("OverlapOnlyPawn"));
 }
 
 void AAttractOrb::BeginPlay()
