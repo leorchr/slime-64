@@ -40,9 +40,24 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 {
 	float dPrdct = FVector::DotProduct(Hit.Normal, FVector::UpVector);
 	UE_LOG(LogTemp, Log, TEXT("Hit Something | Normal : %f"), dPrdct);
-	if (dPrdct < 0.05 && dPrdct > -0.05) {
+	if (dPrdct < InclinaisonToleranceStick && dPrdct > -InclinaisonToleranceStick && movement->IsFalling() && !OtherActor->ActorHasTag(FName(TEXT("Unstickable"))))
+	{
+		setNewState(EMovementState::WallSticked);
+		if (movement->Velocity.Length() > minimalVelocitToStick) {
+			StickyTimer = TimeToUnstick;
+		}
+		else
+		{
+			StickyTimer = 0.1;
+		}
 		movement->GravityScale = 0;
-		movement->Velocity.Z = 0;
+		movement->Velocity = FVector::Zero();
+
+		lastWallNormal = Hit.Normal;
+		
+		JumpCounter = FMath::Max(1,JumpCounter);
+
+		movement->bNotifyApex = false;
 	}
 	
 }
@@ -75,6 +90,7 @@ void ACharacter_Main::AttachToOrb(AAttractOrb* NewOrb)
 	Orb = NewOrb;
 	JumpCounter = FMath::Max(1, JumpCounter);
 	movement->GravityScale = 0.0;
+	setNewState(EMovementState::Hooked);
 }
 
 void ACharacter_Main::DetachFromOrb()
@@ -82,8 +98,10 @@ void ACharacter_Main::DetachFromOrb()
 	if (Orb != nullptr)
 	{
 		movement->GravityScale = BaseGravity;
+		setNewState(EMovementState::Jumping);
 	}
 	Orb = nullptr;	
+	
 }
 
 // Called every frame
@@ -94,6 +112,14 @@ void ACharacter_Main::Tick(float DeltaTime)
 	if (Orb)
 	{
 		Orb->Attract(this, DeltaTime);
+	}
+
+	if (currentState == EMovementState::WallSticked && StickyTimer != 0) {
+		StickyTimer = FMath::Clamp(StickyTimer - DeltaTime, 0, TimeToUnstick);
+		if (StickyTimer == 0) {
+			movement->GravityScale = WallGlidingGravity;
+			setNewState(EMovementState::WallSliding);
+		}
 	}
 }
 
@@ -125,6 +151,7 @@ void ACharacter_Main::OnJumped_Implementation()
 	DetachFromOrb();
 	
 	Super::OnJumped_Implementation();
+	movement->GravityScale = BaseGravity;
 	movement->bNotifyApex = true;
 	JumpCounter--;
 	setNewState(EMovementState::Jumping);
@@ -154,39 +181,69 @@ void ACharacter_Main::NotifyJumpApex()
 void ACharacter_Main::Move(FVector2d Direction)
 {
 	lastMoveDir = Direction;
-	if (Direction.Y != 0.f) {
-		FVector3d cameraForward = Camera->GetForwardVector();
-		cameraForward.Z = 0;
-		cameraForward.Normalize();
-		const FVector3d dir = cameraForward * Direction.Y;
-		AddMovementInput(dir);
+	if (currentState != EMovementState::WallSliding && currentState != EMovementState::WallSticked)
+	{
+		if (Direction.Y != 0.f) {
+			FVector3d cameraForward = Camera->GetForwardVector();
+			cameraForward.Z = 0;
+			cameraForward.Normalize();
+			const FVector3d dir = cameraForward * Direction.Y;
+			AddMovementInput(dir);
 
 		
-	}
-	if (Direction.X != 0.f) {
-		FVector3d cameraRight = Camera->GetRightVector();
-		cameraRight.Z = 0;
-		cameraRight.Normalize();
-		const FVector3d dir = cameraRight * Direction.X;
-		AddMovementInput(dir);
-	}
+		}
+		if (Direction.X != 0.f) {
+			FVector3d cameraRight = Camera->GetRightVector();
+			cameraRight.Z = 0;
+			cameraRight.Normalize();
+			const FVector3d dir = cameraRight * Direction.X;
+			AddMovementInput(dir);
+		}
 
 
 
-	//Stopped Giving Movement
-	if (Direction.Length() == 0) {
-		if (!movement->IsFalling() && currentState != EMovementState::Idle) {
-			setNewState(EMovementState::Idle);
+		//Stopped Giving Movement
+		if (Direction.Length() == 0) {
+			if (!movement->IsFalling() && currentState != EMovementState::Idle) {
+				setNewState(EMovementState::Idle);
+			}
+		}
+		else {
+			if (!movement->IsFalling()) {
+				EMovementState nState = bIsRunning ? EMovementState::Running : EMovementState::Walking;
+				if (nState != currentState) {
+					setNewState(nState);
+				}
+			}
+		
 		}
 	}
 	else {
-		if (!movement->IsFalling()) {
-			EMovementState nState = bIsRunning ? EMovementState::Running : EMovementState::Walking;
-			if (nState != currentState) {
-				setNewState(nState);
+		FVector dirWished = FVector::Zero();
+		if (Direction.Y != 0.f) {
+			FVector3d cameraForward = Camera->GetForwardVector();
+			cameraForward.Z = 0;
+			cameraForward.Normalize();
+			const FVector3d dir = cameraForward * Direction.Y;
+			dirWished += dir;
+
+
+		}
+		if (Direction.X != 0.f) {
+			FVector3d cameraRight = Camera->GetRightVector();
+			cameraRight.Z = 0;
+			cameraRight.Normalize();
+			const FVector3d dir = cameraRight * Direction.X;
+			dirWished += dir;
+		}
+		if (dirWished.Length() > 0.5) {
+			float comparisonWallNormal = FVector::DotProduct(dirWished, lastWallNormal);
+			if (comparisonWallNormal > WallUnstickTolerance) {
+				movement->GravityScale = BaseGravity;
+				setNewState(EMovementState::Falling);
+				movement->bNotifyApex = false;
 			}
 		}
-		
 	}
 }
 
@@ -206,5 +263,19 @@ void ACharacter_Main::Run(bool RunToggle)
 		if (!movement->IsFalling() && movement->Velocity.Length() > 10) {
 			setNewState(EMovementState::Walking);
 		}
+	}
+}
+
+void ACharacter_Main::CharacterJump()
+{
+	if (currentState != EMovementState::WallSliding && currentState != EMovementState::WallSticked) {
+		Jump();
+	}
+	else {
+		FVector WallJumpForce =  FVector(lastWallNormal.X * HorizontalWallJumpForce, lastWallNormal.Y * HorizontalWallJumpForce, VerticalWallJumpForce);
+		movement->AddImpulse(WallJumpForce,true);
+		setNewState(EMovementState::Jumping);
+		movement->bNotifyApex = true;
+		movement->GravityScale = BaseGravity;
 	}
 }

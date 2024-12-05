@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "TimerManager.h"
+#include "Engine/World.h"
 #include "CharacterHealth.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, int32, NewHealth);
@@ -41,4 +43,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	int health = 3;
 	int startHealth;
+
+
+protected:
+	UFUNCTION(BlueprintCallable)
+	void OnEndCooldown();
+	FTimerHandle MyTimerHandle;
+	bool canTakeHit = true;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float invulnerabilityCooldown = 5.0f;
 };

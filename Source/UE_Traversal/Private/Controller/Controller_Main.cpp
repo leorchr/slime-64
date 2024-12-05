@@ -60,7 +60,7 @@ void AController_Main::Jump(const FInputActionValue& value)
 	if (!character)
 		return;
 
-	character->Jump();
+	character->CharacterJump();
 }
 
 void AController_Main::Run(const FInputActionValue& value)
