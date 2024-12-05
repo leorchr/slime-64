@@ -98,7 +98,7 @@ void ARail::Tick(float DeltaTime)
 			Distance += DeltaTime * RailSpeed * Direction;
 			Orb->SetActorLocation(SplineComponent->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World));
 			FVector SplineVector = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
-			Direction = FVector::DotProduct(SplineVector, Character->GetActorForwardVector());
+			Direction = FVector::DotProduct(SplineVector, Character->ActorForward);
 			Direction /= FMath::Abs(Direction);
 		}
 	} else
