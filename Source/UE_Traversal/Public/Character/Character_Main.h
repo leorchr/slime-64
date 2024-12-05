@@ -15,7 +15,7 @@ struct FPlayerValue
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 }*/
 
-UENUM()
+UENUM(BlueprintType)
 enum class EMovementState : uint8
 {
 	Idle,
@@ -54,6 +54,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	class UStaticMeshComponent* blobMesh = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float BaseGravity = 1.f;
@@ -97,6 +99,10 @@ protected:
 	float VerticalWallJumpForce = 1.f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|WallSliding")
 	float HorizontalWallJumpForce = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|WallSliding")
+	float ManualUnstickTime = .5f;
+	float CurrentManualUnstickTime = ManualUnstickTime;
 	float StickyTimer = TimeToUnstick;
 
 	void setNewState(EMovementState newState);

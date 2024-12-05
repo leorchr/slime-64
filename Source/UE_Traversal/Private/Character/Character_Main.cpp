@@ -10,6 +10,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/CapsuleComponent.h"
 #include "Gameplay/AttractOrb.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ACharacter_Main::ACharacter_Main(const FObjectInitializer& ObjectInitializer)
@@ -50,6 +51,7 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 		{
 			StickyTimer = 0.1;
 		}
+		CurrentManualUnstickTime = ManualUnstickTime;
 		movement->GravityScale = 0;
 		movement->Velocity = FVector::Zero();
 
@@ -58,6 +60,10 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 		JumpCounter = FMath::Max(1,JumpCounter);
 
 		movement->bNotifyApex = false;
+
+		FRotator newRot = UKismetMathLibrary::FindLookAtRotation(FVector::Zero(), lastWallNormal);
+
+		//blobMesh->SetWorldRotation(newRot);
 	}
 	
 }
@@ -70,6 +76,7 @@ void ACharacter_Main::BeginPlay()
 	movement->MaxAcceleration = MaxWalkAcceleration;
 	movement->JumpZVelocity = JumpForce;
 	
+	//blobMesh =   GetComponentByClass<UStaticMeshComponent>();
 }
 
 
@@ -135,7 +142,8 @@ void ACharacter_Main::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 	JumpCounter = JumpNumber;
-
+	movement->JumpZVelocity = JumpForce;
+	movement->bNotifyApex = true;
 	movement->GravityScale = BaseGravity;
 
 	if (lastMoveDir.Length() == 0) {
@@ -174,6 +182,7 @@ bool ACharacter_Main::CanJumpInternal_Implementation() const
 void ACharacter_Main::NotifyJumpApex()
 {
 	Super::NotifyJumpApex();
+	JumpCounter = FMath::Min(JumpCounter, 1);
 	setNewState(EMovementState::Falling);
 	movement->GravityScale = ApexGravity;
 }
@@ -239,9 +248,17 @@ void ACharacter_Main::Move(FVector2d Direction)
 		if (dirWished.Length() > 0.5) {
 			float comparisonWallNormal = FVector::DotProduct(dirWished, lastWallNormal);
 			if (comparisonWallNormal > WallUnstickTolerance) {
-				movement->GravityScale = BaseGravity;
-				setNewState(EMovementState::Falling);
-				movement->bNotifyApex = false;
+				if (CurrentManualUnstickTime == 0) {
+					movement->GravityScale = BaseGravity;
+					setNewState(EMovementState::Falling);
+					movement->bNotifyApex = false;
+				}
+				else {
+					CurrentManualUnstickTime = FMath::Clamp(CurrentManualUnstickTime - GetWorld()->GetDeltaSeconds(), 0, ManualUnstickTime);
+				}
+			}
+			else {
+				CurrentManualUnstickTime = ManualUnstickTime;
 			}
 		}
 	}
@@ -269,6 +286,12 @@ void ACharacter_Main::Run(bool RunToggle)
 void ACharacter_Main::CharacterJump()
 {
 	if (currentState != EMovementState::WallSliding && currentState != EMovementState::WallSticked) {
+		if (JumpCounter > 1) {
+			movement->JumpZVelocity = JumpForce;
+		}
+		else {
+			movement->JumpZVelocity = SecondJumpForce;
+		}
 		Jump();
 	}
 	else {
