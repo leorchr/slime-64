@@ -103,6 +103,7 @@ void ACharacter_Main::setNewState(EMovementState newState)
 
 void ACharacter_Main::setNewRotationForwardTarget(FVector target)
 {
+	ActorForward = target;
 	FRotator newRot = UKismetMathLibrary::FindLookAtRotation(FVector::Zero(), target);
 
 	newRot.Yaw -= 90;
