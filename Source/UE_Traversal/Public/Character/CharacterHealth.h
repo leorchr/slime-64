@@ -52,6 +52,9 @@ protected:
 
 	int startHealth;
 
+	UFUNCTION(BlueprintCallable)
+	void TriggerGameOver();
+
 
 protected:
 	UFUNCTION(BlueprintCallable)

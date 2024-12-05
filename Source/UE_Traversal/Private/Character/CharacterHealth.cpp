@@ -73,6 +73,11 @@ void UCharacterHealth::AddHeart()
 	else UE_LOG(LogTemp,Log,TEXT("Already maximum health"));
 }
 
+void UCharacterHealth::TriggerGameOver()
+{
+	OnGameOver.Broadcast();
+}
+
 void UCharacterHealth::OnEndCooldown()
 {
 	canTakeHit = true;
