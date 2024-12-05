@@ -52,6 +52,10 @@ private:
 	float StartZone = 200.0f;
 	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
 	float EndZone = 1.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera|Lag")
+	float TimeInZone = 2.0f;
+
+	float Timer = 0.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Camera|FOV")
 	float WalkingFOV = 90.0f;

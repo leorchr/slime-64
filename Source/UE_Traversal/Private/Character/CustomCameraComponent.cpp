@@ -54,8 +54,12 @@ void UCustomCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		if (Offset < EndZone)
 		{
-			SeekPlayer = false;
-			return;
+			Timer += DeltaTime;
+			if (Timer > TimeInZone)
+			{
+				SeekPlayer = false;
+				return;
+			}
 		}
 		if (Offset > StartZone)
 		{
