@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, int32, NewHealth);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHitByEnemy);
 
 UCLASS( Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_TRAVERSAL_API UCharacterHealth : public UActorComponent
@@ -23,6 +24,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FOnGameOver OnGameOver;
+
+	UPROPERTY(BlueprintAssignable, Category = "Health")
+	FOnHitByEnemy OnHitByEnemy;
 
 	UFUNCTION(BlueprintCallable)
 	void ResetHealth();

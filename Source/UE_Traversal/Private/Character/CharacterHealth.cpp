@@ -37,7 +37,7 @@ void UCharacterHealth::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 	if(health > 0)
 	{
 		health--;
-
+		OnHitByEnemy.Broadcast();
 		OnHealthChanged.Broadcast(health);
 		canTakeHit = false;
 		if(health != 0)
