@@ -50,6 +50,9 @@ public:
 	FVector lastWallNormal;
 
 	UPROPERTY(BlueprintReadWrite)
+	AActor* lastWallHit;
+
+	UPROPERTY(BlueprintReadWrite)
 	FVector ActorForward;
 
 	UFUNCTION()

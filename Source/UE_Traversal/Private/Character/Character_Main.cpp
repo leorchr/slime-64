@@ -46,6 +46,7 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 	if (dPrdct < InclinaisonToleranceStick && dPrdct > -InclinaisonToleranceStick && movement->IsFalling() && !OtherActor->ActorHasTag(FName(TEXT("Unstickable"))))
 	{
 		lastWallNormal = Hit.Normal;
+		lastWallHit = OtherActor;
 		setNewState(EMovementState::WallSticked);
 		if (movement->Velocity.Length() > minimalVelocitToStick) {
 			StickyTimer = TimeToUnstick;
