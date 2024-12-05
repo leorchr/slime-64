@@ -1,5 +1,6 @@
 #include "Character/CharacterHealth.h"
 #include "Components/CapsuleComponent.h"
+#include "Character/Character_Main.h"
 
 UCharacterHealth::UCharacterHealth()
 {
@@ -34,6 +35,11 @@ void UCharacterHealth::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 {
 	if(!OtherActor->ActorHasTag("Enemy")) return;
 	if(!canTakeHit) return;
+	FVector ExpulseDir = (GetOwner()->GetActorLocation() - OtherActor->GetActorLocation()).GetSafeNormal();
+	ExpulseDir.Z = 1;
+	ExpulseDir *= HitExpulsePower;
+	Cast<ACharacter_Main>(GetOwner())->Impulse(ExpulseDir);
+
 	if(health > 0)
 	{
 		health--;

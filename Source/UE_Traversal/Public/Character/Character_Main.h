@@ -117,10 +117,16 @@ protected:
 	
 	// Orb
 	class AAttractOrb *Orb = nullptr;
+
+	UMaterialInstanceDynamic* SlimeDynamicMaterial;
 	
 public:	
 	void AttachToOrb(class AAttractOrb *NewOrb);
 	void DetachFromOrb();
+
+	void Impulse(FVector dir);
+
+	void deformBasedOnVelocity(float angle);
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

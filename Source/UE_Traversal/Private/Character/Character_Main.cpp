@@ -65,9 +65,7 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 		movement->bNotifyApex = false;
 
 
-		FVector wNormalNoZ = lastWallNormal;
-		wNormalNoZ.Z = 0;
-		setNewRotationForwardTarget(wNormalNoZ);
+		
 
 		
 	}
@@ -132,6 +130,21 @@ void ACharacter_Main::DetachFromOrb()
 	
 }
 
+void ACharacter_Main::Impulse(FVector dir)
+{
+	setNewState(EMovementState::Falling);
+	movement->AddImpulse(dir);
+}
+
+void ACharacter_Main::deformBasedOnVelocity(float angle)
+{
+	if (!SlimeDynamicMaterial) {
+		SlimeDynamicMaterial = UMaterialInstanceDynamic::Create(blobMesh->GetMaterial(0), blobMesh);
+	}
+	SlimeDynamicMaterial->SetScalarParameterValue("RotateAxis", angle);
+	blobMesh->SetMaterial(0, SlimeDynamicMaterial);
+}
+
 // Called every frame
 void ACharacter_Main::Tick(float DeltaTime)
 {
@@ -147,6 +160,9 @@ void ACharacter_Main::Tick(float DeltaTime)
 		if (StickyTimer == 0) {
 			movement->GravityScale = WallGlidingGravity;
 			setNewState(EMovementState::WallSliding);
+			FVector wNormalNoZ = lastWallNormal;
+			wNormalNoZ.Z = 0;
+			setNewRotationForwardTarget(wNormalNoZ);
 		}
 	}
 
@@ -237,8 +253,7 @@ void ACharacter_Main::Move(FVector2d Direction)
 			AddMovementInput(dir);
 		}
 		
-		newDir.Z = 0;
-		setNewRotationForwardTarget(newDir);
+		
 
 
 		//Stopped Giving Movement
@@ -255,7 +270,8 @@ void ACharacter_Main::Move(FVector2d Direction)
 					setNewState(nState);
 				}
 			}
-			
+			newDir.Z = 0;
+			setNewRotationForwardTarget(newDir);
 		}
 	}
 	else {
@@ -331,5 +347,8 @@ void ACharacter_Main::CharacterJump()
 		setNewState(EMovementState::Jumping);
 		movement->bNotifyApex = true;
 		movement->GravityScale = BaseGravity;
+		FVector wNormalNoZ = lastWallNormal;
+		wNormalNoZ.Z = 0;
+		setNewRotationForwardTarget(wNormalNoZ);
 	}
 }
