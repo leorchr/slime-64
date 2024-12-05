@@ -54,12 +54,18 @@ void UCustomCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		if (Offset < EndZone)
 		{
-			SeekPlayer = false;
-			return;
+			Timer += DeltaTime;
+			if (Timer > TimeInZone)
+			{
+				SeekPlayer = false;
+				Timer = 0.0f;
+				return;
+			}
 		}
 		if (Offset > StartZone)
 		{
 			SeekPlayer = true;
+			Timer = 0.0f;
 		}
 
 		if (SeekPlayer)
@@ -78,7 +84,7 @@ FVector UCustomCameraComponent::GetPredictLocation()
 	FVector Velocity = Character->GetVelocity();
 
 	float Delta = ForwardDelta;
-	Delta *= 1.0f - FMath::Clamp(FVector::DotProduct(Character->GetActorForwardVector().GetSafeNormal(), Velocity.GetSafeNormal()), 0.0, 1.0);
+	Delta *= 1.0f - FMath::Clamp(FVector::DotProduct(Character->ActorForward.GetSafeNormal(), Velocity.GetSafeNormal()), 0.0, 1.0);
 	
 	Velocity *= Delta;
 	Location += Velocity;

@@ -20,6 +20,9 @@ public:
 	void OnPlayerEndOverlap(UPrimitiveComponent* PrimitiveComponent, AActor* Actor, UPrimitiveComponent* PrimitiveComponent_, signed int i);
 
 	void Attract(class ACharacter_Main* Character, float DeltaTime);
+
+	bool bDeleteOnLeave = false;
+	FVector Inertia = FVector::ZeroVector;
 	
 protected:
 	virtual void BeginPlay();

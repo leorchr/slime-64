@@ -46,6 +46,7 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 	if (dPrdct < InclinaisonToleranceStick && dPrdct > -InclinaisonToleranceStick && movement->IsFalling() && !OtherActor->ActorHasTag(FName(TEXT("Unstickable"))))
 	{
 		lastWallNormal = Hit.Normal;
+		lastWallHit = OtherActor;
 		setNewState(EMovementState::WallSticked);
 		if (movement->Velocity.Length() > minimalVelocitToStick) {
 			StickyTimer = TimeToUnstick;
@@ -65,9 +66,7 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 		movement->bNotifyApex = false;
 
 
-		FVector wNormalNoZ = lastWallNormal;
-		wNormalNoZ.Z = 0;
-		setNewRotationForwardTarget(wNormalNoZ);
+		
 
 		
 	}
@@ -105,6 +104,7 @@ void ACharacter_Main::setNewState(EMovementState newState)
 
 void ACharacter_Main::setNewRotationForwardTarget(FVector target)
 {
+	ActorForward = target;
 	FRotator newRot = UKismetMathLibrary::FindLookAtRotation(FVector::Zero(), target);
 
 	newRot.Yaw -= 90;
@@ -127,9 +127,25 @@ void ACharacter_Main::DetachFromOrb()
 	{
 		movement->GravityScale = BaseGravity;
 		setNewState(EMovementState::Jumping);
+		LaunchCharacter(Orb->Inertia, false, false);
 	}
 	Orb = nullptr;	
 	
+}
+
+void ACharacter_Main::Impulse(FVector dir)
+{
+	setNewState(EMovementState::Falling);
+	movement->AddImpulse(dir);
+}
+
+void ACharacter_Main::deformBasedOnVelocity(float angle)
+{
+	if (!SlimeDynamicMaterial) {
+		SlimeDynamicMaterial = UMaterialInstanceDynamic::Create(blobMesh->GetMaterial(0), blobMesh);
+	}
+	SlimeDynamicMaterial->SetScalarParameterValue("RotateAxis", angle);
+	blobMesh->SetMaterial(0, SlimeDynamicMaterial);
 }
 
 // Called every frame
@@ -147,6 +163,9 @@ void ACharacter_Main::Tick(float DeltaTime)
 		if (StickyTimer == 0) {
 			movement->GravityScale = WallGlidingGravity;
 			setNewState(EMovementState::WallSliding);
+			FVector wNormalNoZ = lastWallNormal;
+			wNormalNoZ.Z = 0;
+			setNewRotationForwardTarget(wNormalNoZ);
 		}
 	}
 
@@ -185,6 +204,7 @@ void ACharacter_Main::OnJumped_Implementation()
 	
 	Super::OnJumped_Implementation();
 	movement->GravityScale = BaseGravity;
+	
 	movement->bNotifyApex = true;
 	JumpCounter--;
 	setNewState(EMovementState::Jumping);
@@ -237,8 +257,7 @@ void ACharacter_Main::Move(FVector2d Direction)
 			AddMovementInput(dir);
 		}
 		
-		newDir.Z = 0;
-		setNewRotationForwardTarget(newDir);
+		
 
 
 		//Stopped Giving Movement
@@ -255,7 +274,8 @@ void ACharacter_Main::Move(FVector2d Direction)
 					setNewState(nState);
 				}
 			}
-			
+			newDir.Z = 0;
+			setNewRotationForwardTarget(newDir);
 		}
 	}
 	else {
@@ -322,6 +342,15 @@ void ACharacter_Main::CharacterJump()
 		}
 		else {
 			movement->JumpZVelocity = SecondJumpForce;
+			if (CanJumpInternal_Implementation()) {
+				if (lastMoveDir.Length() > 0.1) {
+					FVector vel = movement->Velocity;
+					vel.Z = 0;
+					float spd = vel.Length();
+					FVector trueDir = lastMoveDir.Y * Camera->GetForwardVector() + lastMoveDir.X * Camera->GetRightVector();
+					movement->Velocity = FVector(trueDir.X * spd, trueDir.Y * spd, movement->Velocity.Z);
+				}
+			}
 		}
 		Jump();
 	}
@@ -331,5 +360,8 @@ void ACharacter_Main::CharacterJump()
 		setNewState(EMovementState::Jumping);
 		movement->bNotifyApex = true;
 		movement->GravityScale = BaseGravity;
+		FVector wNormalNoZ = lastWallNormal;
+		wNormalNoZ.Z = 0;
+		setNewRotationForwardTarget(wNormalNoZ);
 	}
 }

@@ -46,7 +46,14 @@ private:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	int health = 3;
+
+	UPROPERTY(EditDefaultsOnly)
+	int HitExpulsePower = 500;
+
 	int startHealth;
+
+	UFUNCTION(BlueprintCallable)
+	void TriggerGameOver();
 
 
 protected:

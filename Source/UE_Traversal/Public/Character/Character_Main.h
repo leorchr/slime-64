@@ -49,6 +49,12 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FVector lastWallNormal;
 
+	UPROPERTY(BlueprintReadWrite)
+	AActor* lastWallHit;
+
+	UPROPERTY(BlueprintReadWrite)
+	FVector ActorForward;
+
 	UFUNCTION()
 	void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
@@ -117,10 +123,16 @@ protected:
 	
 	// Orb
 	class AAttractOrb *Orb = nullptr;
+
+	UMaterialInstanceDynamic* SlimeDynamicMaterial;
 	
 public:	
 	void AttachToOrb(class AAttractOrb *NewOrb);
 	void DetachFromOrb();
+
+	void Impulse(FVector dir);
+
+	void deformBasedOnVelocity(float angle);
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
