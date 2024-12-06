@@ -69,6 +69,7 @@ void ARail::OnBeginPlayerOverlap()
 	Direction /= FMath::Abs(Direction);
 
 	LastForward = Character->ActorForward;
+	Timer = 0.0f;
 }
 
 void ARail::OnEndPlayerOverlap()
@@ -100,7 +101,14 @@ void ARail::Tick(float DeltaTime)
 		
 		if (Orb && Character)
 		{
-			Distance += DeltaTime * RailSpeed * Direction;
+			if (!CurveSpeed)
+			{
+				Distance += DeltaTime * RailSpeed * Direction;
+			} else
+			{
+				Timer += DeltaTime;
+				Distance += CurveSpeed->GetFloatValue(Timer) * DeltaTime * Direction;
+			}
 			Distance = FMath::Clamp(Distance, 0.0, SplineComponent->GetSplineLength());
 			Orb->SetActorLocation(SplineComponent->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World));
 			FVector SplineVector = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
