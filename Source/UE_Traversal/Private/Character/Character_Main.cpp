@@ -58,6 +58,9 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 		if (OtherActor->ActorHasTag(FName(TEXT("Stickable"))))
 		{
 			StickyTimer = std::numeric_limits<float>::max();
+			FVector wNormalNoZ = lastWallNormal;
+			wNormalNoZ.Z = 0;
+			setNewRotationForwardTarget(wNormalNoZ);
 		}
 		CurrentManualUnstickTime = ManualUnstickTime;
 		movement->GravityScale = 0;
@@ -68,13 +71,7 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 		JumpCounter = FMath::Max(1,JumpCounter);
 
 		movement->bNotifyApex = false;
-
-
-		
-
-		
 	}
-	
 }
 
 // Called when the game starts or when spawned
@@ -163,8 +160,6 @@ void ACharacter_Main::deformBasedOnVelocity()
 	FRotator meshRot = blobMesh->GetComponentRotation();
 	meshRot.Yaw += 90;
 
-	
-
 	SlimeDynamicMaterial->SetVectorParameterValue("ForwardVector", meshRot.Vector());
 
 	FVector fwd = FVector(0,1,0);
@@ -209,9 +204,7 @@ void ACharacter_Main::Tick(float DeltaTime)
 void ACharacter_Main::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
-
 
 void ACharacter_Main::Landed(const FHitResult& Hit)
 {
@@ -276,8 +269,6 @@ void ACharacter_Main::Move(FVector2d Direction)
 			const FVector3d dir = cameraForward * Direction.Y;
 			newDir += dir;
 			AddMovementInput(dir);
-
-		
 		}
 		if (Direction.X != 0.f) {
 			FVector3d cameraRight = Camera->GetRightVector();
@@ -288,9 +279,6 @@ void ACharacter_Main::Move(FVector2d Direction)
 			AddMovementInput(dir);
 		}
 		
-		
-
-
 		//Stopped Giving Movement
 		if (Direction.Length() == 0) {
 			if (!movement->IsFalling() && currentState != EMovementState::Idle) {
@@ -377,10 +365,11 @@ void ACharacter_Main::CharacterJump()
 				if (lastMoveDir.Length() > 0.1) {
 					FVector vel = movement->Velocity;
 					vel.Z = 0;
-					float spd = vel.Length();
+					// float spd = vel.Length();
+					float spd = FMath::Max(vel.Length(), HorizontalWallJumpForce / 1.5f);
 					FVector trueDir = lastMoveDir.Y * Camera->GetForwardVector() + lastMoveDir.X * Camera->GetRightVector();
 					movement->Velocity = FVector(trueDir.X * spd, trueDir.Y * spd, movement->Velocity.Z);
-				}
+ 				}
 			}
 		}
 		Jump();
