@@ -125,7 +125,7 @@ void ACharacter_Main::setNewRotationForwardTarget(FVector target)
 void ACharacter_Main::AttachToOrb(AAttractOrb* NewOrb)
 {
 	Orb = NewOrb;
-	JumpCounter = FMath::Max(1, JumpCounter);
+	JumpCounter = FMath::Max(2, JumpCounter);
 	movement->GravityScale = 0.0;
 	setNewState(EMovementState::Hooked);
 }
