@@ -49,7 +49,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Rail")
 	float RailSpeed = 900.0f;
-	UPROPERTY(EditDefaultsOnly, Category = "Rail")
+	UPROPERTY(EditAnywhere, Category = "Rail")
 	float LaunchStrength = 900.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Rail")
 	UCurveFloat *CurveSpeed;

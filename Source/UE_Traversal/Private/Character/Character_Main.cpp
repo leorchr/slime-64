@@ -366,7 +366,7 @@ void ACharacter_Main::CharacterJump()
 					FVector vel = movement->Velocity;
 					vel.Z = 0;
 					// float spd = vel.Length();
-					float spd = FMath::Max(vel.Length(), HorizontalWallJumpForce / 1.5f);
+					float spd = FMath::Min(FMath::Max(vel.Length(), HorizontalWallJumpForce / 1.5f), HorizontalWallJumpForce);
 					FVector trueDir = lastMoveDir.Y * Camera->GetForwardVector() + lastMoveDir.X * Camera->GetRightVector();
 					movement->Velocity = FVector(trueDir.X * spd, trueDir.Y * spd, movement->Velocity.Z);
  				}
