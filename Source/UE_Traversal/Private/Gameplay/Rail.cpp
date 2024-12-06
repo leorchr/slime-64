@@ -92,10 +92,13 @@ void ARail::Tick(float DeltaTime)
 		{
 			bHit = true;
 			Character = Cast<ACharacter_Main>(OverlappingActor);
-			OnBeginPlayerOverlap();
+			if (Character)
+			{
+				OnBeginPlayerOverlap();
+			}
 		}
 		
-		if (Orb)
+		if (Orb && Character)
 		{
 			Distance += DeltaTime * RailSpeed * Direction;
 			Distance = FMath::Clamp(Distance, 0.0, SplineComponent->GetSplineLength());
