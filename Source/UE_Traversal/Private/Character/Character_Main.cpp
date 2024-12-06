@@ -186,7 +186,7 @@ void ACharacter_Main::Tick(float DeltaTime)
 	}
 
 	if (currentState == EMovementState::WallSticked && StickyTimer != 0) {
-		StickyTimer = FMath::Clamp(StickyTimer - DeltaTime, 0, TimeToUnstick);
+		StickyTimer = FMath::Clamp(StickyTimer - DeltaTime, 0, std::numeric_limits<float>::max());
 		if (StickyTimer == 0) {
 			movement->GravityScale = WallGlidingGravity;
 			setNewState(EMovementState::WallSliding);
