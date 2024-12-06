@@ -55,6 +55,10 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 		{
 			StickyTimer = 0.1;
 		}
+		if (OtherActor->ActorHasTag(FName(TEXT("Stickable"))))
+		{
+			StickyTimer = std::numeric_limits<float>::max();
+		}
 		CurrentManualUnstickTime = ManualUnstickTime;
 		movement->GravityScale = 0;
 		movement->Velocity = FVector::Zero();
