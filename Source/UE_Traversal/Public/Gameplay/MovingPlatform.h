@@ -20,7 +20,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	class USplineComponent* spline;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
 	class UStaticMeshComponent* mesh;
 
 	
