@@ -11,6 +11,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Gameplay/AttractOrb.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Gameplay/MovingPlatform.h"
 
 // Sets default values
 ACharacter_Main::ACharacter_Main(const FObjectInitializer& ObjectInitializer)
@@ -47,6 +48,10 @@ void ACharacter_Main::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 	{
 		lastWallNormal = Hit.Normal;
 		lastWallHit = OtherActor;
+		currentMovingWall = Cast<AMovingPlatform>(lastWallHit);
+		if (currentMovingWall) {
+			currSplineDistMovingWall = currentMovingWall->currentDistance;
+		}
 		setNewState(EMovementState::WallSticked);
 		if (movement->Velocity.Length() > minimalVelocitToStick) {
 			StickyTimer = TimeToUnstick;
@@ -81,6 +86,8 @@ void ACharacter_Main::BeginPlay()
 	movement->MaxWalkSpeed = MaxWalkSpeed;
 	movement->MaxAcceleration = MaxWalkAcceleration;
 	movement->JumpZVelocity = JumpForce;
+
+	WallCollisionChannel = UEngineTypes::ConvertToCollisionChannel(WallCollisionTraceChannel);
 	
 	TArray<UStaticMeshComponent*> Comps; 
 	GetComponents(Comps);
@@ -190,7 +197,28 @@ void ACharacter_Main::Tick(float DeltaTime)
 			setNewRotationForwardTarget(wNormalNoZ);
 		}
 	}
+	if (currentState == EMovementState::WallSticked || currentState == EMovementState::WallSliding) {
+		//TODO : Check if the wall is still there
+		FVector3d rayStart = GetActorLocation();
+		FVector3d rayEnd = rayStart + (-lastWallNormal*100);
 
+		FHitResult hitInfo;
+		FCollisionQueryParams Params;
+
+		Params.AddIgnoredActor(this);
+
+		const bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, rayStart, rayEnd, WallCollisionChannel);
+		if (!bHit) {
+			movement->GravityScale = BaseGravity;
+			setNewState(EMovementState::Falling);
+			movement->bNotifyApex = false;
+			currentMovingWall = nullptr;
+		}
+
+		if (currentMovingWall) {
+			SetActorLocation(GetActorLocation() + currentMovingWall->getNextMove(currSplineDistMovingWall, DeltaTime));
+		}
+	}
 	FVector vel = movement->Velocity;
 	vel.Z = 0;
 	SpeedRatio = vel.Length() / MaxRunSpeed;
@@ -228,6 +256,7 @@ void ACharacter_Main::OnJumped_Implementation()
 	
 	Super::OnJumped_Implementation();
 	movement->GravityScale = BaseGravity;
+	currentMovingWall = nullptr;
 	
 	movement->bNotifyApex = true;
 	JumpCounter--;
@@ -322,6 +351,7 @@ void ACharacter_Main::Move(FVector2d Direction)
 					movement->GravityScale = BaseGravity;
 					setNewState(EMovementState::Falling);
 					movement->bNotifyApex = false;
+					currentMovingWall = nullptr;
 				}
 				else {
 					CurrentManualUnstickTime = FMath::Clamp(CurrentManualUnstickTime - GetWorld()->GetDeltaSeconds(), 0, ManualUnstickTime);
