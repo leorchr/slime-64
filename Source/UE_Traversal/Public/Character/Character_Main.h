@@ -52,6 +52,10 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	AActor* lastWallHit;
 
+	class AMovingPlatform* currentMovingWall;
+
+	float currSplineDistMovingWall;
+
 	UPROPERTY(BlueprintReadWrite)
 	FVector ActorForward;
 
@@ -90,6 +94,10 @@ protected:
 	int JumpNumber = 2;
 
 	int JumpCounter = JumpNumber;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|WallSliding")
+	TEnumAsByte<ETraceTypeQuery> WallCollisionTraceChannel;
+	ECollisionChannel WallCollisionChannel;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|WallSliding")
 	float WallGlidingGravity = 0.2f;
