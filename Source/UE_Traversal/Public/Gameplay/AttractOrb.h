@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "AttractOrb.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHook);
+
 UCLASS()
 class UE_TRAVERSAL_API AAttractOrb : public AActor
 {
@@ -13,6 +15,9 @@ class UE_TRAVERSAL_API AAttractOrb : public AActor
 	
 public:	
 	AAttractOrb(const FObjectInitializer& ObjectInitializer);
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnHook OnHook;
 
 	UFUNCTION()
 	void OnPlayerOverlap(UPrimitiveComponent* PrimitiveComponent, AActor* Actor, UPrimitiveComponent* PrimitiveComponent_, int32 i, bool b, const FHitResult& HitResult);

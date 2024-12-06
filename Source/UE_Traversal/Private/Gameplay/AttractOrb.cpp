@@ -30,6 +30,8 @@ void AAttractOrb::BeginPlay()
 
 void AAttractOrb::OnPlayerOverlap(UPrimitiveComponent* PrimitiveComponent, AActor* Actor, UPrimitiveComponent* Component, signed int, bool, const FHitResult& HitResult)
 {
+	OnHook.Broadcast();
+	
 	AttractTime = 0.0f;
 	auto Slime = Cast<ACharacter_Main>(Actor);
 	if (!Slime) return;

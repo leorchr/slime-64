@@ -132,7 +132,7 @@ void ACharacter_Main::setNewRotationForwardTarget(FVector target)
 void ACharacter_Main::AttachToOrb(AAttractOrb* NewOrb)
 {
 	Orb = NewOrb;
-	JumpCounter = FMath::Max(1, JumpCounter);
+	JumpCounter = FMath::Max(2, JumpCounter);
 	movement->GravityScale = 0.0;
 	setNewState(EMovementState::Hooked);
 }
@@ -396,7 +396,7 @@ void ACharacter_Main::CharacterJump()
 					FVector vel = movement->Velocity;
 					vel.Z = 0;
 					// float spd = vel.Length();
-					float spd = FMath::Max(vel.Length(), HorizontalWallJumpForce / 1.5f);
+					float spd = HorizontalWallJumpForce / 1.2f;
 					FVector trueDir = lastMoveDir.Y * Camera->GetForwardVector() + lastMoveDir.X * Camera->GetRightVector();
 					movement->Velocity = FVector(trueDir.X * spd, trueDir.Y * spd, movement->Velocity.Z);
  				}
