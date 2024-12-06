@@ -38,9 +38,12 @@ AActor* ARail::FindOverlappingActor()
 		if (USplineMeshComponent *MeshComponent = Cast<USplineMeshComponent>(Component))
 		{
 			MeshComponent->GetOverlappingActors(OverlappingActors, CharacterType);
-			if (OverlappingActors.Num() > 0)
+			for (auto Actor : OverlappingActors)
 			{
-				return OverlappingActors[0];
+				if (auto ActorT = Cast<ACharacter_Main>(Actor))
+				{
+					return Actor;
+				}
 			}
 		}
 	}
@@ -64,9 +67,12 @@ void ARail::OnBeginPlayerOverlap()
 	
 	Orb->GetComponentByClass<UStaticMeshComponent>()->SetVisibility(false);
 
-	FVector SplineVector = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
-	Direction = FVector::DotProduct(SplineVector, Character->ActorForward);
-	Direction /= FMath::Abs(Direction);
+	if (!ForceDir)
+	{
+		FVector SplineVector = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
+		Direction = FVector::DotProduct(SplineVector, Character->ActorForward);
+		Direction /= FMath::Abs(Direction);
+	}
 
 	LastForward = Character->ActorForward;
 	Timer = 0.0f;
@@ -113,7 +119,7 @@ void ARail::Tick(float DeltaTime)
 			Orb->SetActorLocation(SplineComponent->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World));
 			FVector SplineVector = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
 
-			if ((Character->ActorForward - LastForward).Length() > std::numeric_limits<double>::epsilon())
+			if (!ForceDir && (Character->ActorForward - LastForward).Length() > std::numeric_limits<double>::epsilon())
 			{
 				Direction = FVector::DotProduct(SplineVector, Character->ActorForward);
 				Direction /= FMath::Abs(Direction);
