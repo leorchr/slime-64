@@ -45,6 +45,8 @@ protected:
 	float Distance = 0;
 	float Direction = 1;
 
+	FVector LastForward = FVector::ZeroVector;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Rail")
 	float RailSpeed = 900.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Rail")

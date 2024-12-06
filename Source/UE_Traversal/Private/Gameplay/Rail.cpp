@@ -65,8 +65,10 @@ void ARail::OnBeginPlayerOverlap()
 	Orb->GetComponentByClass<UStaticMeshComponent>()->SetVisibility(false);
 
 	FVector SplineVector = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
-	Direction = FVector::DotProduct(SplineVector, Character->GetVelocity());
+	Direction = FVector::DotProduct(SplineVector, Character->ActorForward);
 	Direction /= FMath::Abs(Direction);
+
+	LastForward = Character->ActorForward;
 }
 
 void ARail::OnEndPlayerOverlap()
@@ -99,8 +101,13 @@ void ARail::Tick(float DeltaTime)
 			Distance = FMath::Clamp(Distance, 0.0, SplineComponent->GetSplineLength());
 			Orb->SetActorLocation(SplineComponent->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World));
 			FVector SplineVector = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
-			Direction = FVector::DotProduct(SplineVector, Character->ActorForward);
-			Direction /= FMath::Abs(Direction);
+
+			if ((Character->ActorForward - LastForward).Length() > std::numeric_limits<double>::epsilon())
+			{
+				Direction = FVector::DotProduct(SplineVector, Character->ActorForward);
+				Direction /= FMath::Abs(Direction);
+				LastForward = Character->ActorForward;
+			}
 
 			Orb->Inertia = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World) * LaunchStrength;
 			Orb->Inertia.X *= Direction;
