@@ -42,6 +42,7 @@ public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnStateChange OnStateChange;
 
+	UPROPERTY(BlueprintReadOnly)
 	EMovementState currentState = EMovementState::Idle;
 
 	bool bIsRunning;
@@ -131,6 +132,7 @@ protected:
 
 	FVector LeftEyeBasePos, RightEyeBasePos;
 
+	UFUNCTION(BlueprintCallable)
 	void setNewState(EMovementState newState);
 
 	void setNewRotationForwardTarget(FVector target);

@@ -22,7 +22,8 @@ AMovingPlatform::AMovingPlatform(const FObjectInitializer& ObjectInitializer)
 void AMovingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	currentDistance = beginProgress * spline->GetSplineLength();
+	currentDirection = startInReverse ? -1 : 1;
 }
 
 FVector AMovingPlatform::getNextMove(float& currDist, float deltaTime)
@@ -44,7 +45,13 @@ void AMovingPlatform::Tick(float DeltaTime)
 	mesh->SetWorldLocation(spline->GetLocationAtDistanceAlongSpline(currentDistance, ESplineCoordinateSpace::World));
 
 	if ((currentDistance == 0 && currentDirection == -1) || (currentDistance == spline->GetSplineLength() && currentDirection == 1)) {
-		currentDirection *= -1;
+		if (spline->IsClosedLoop()) {
+			currentDistance = currentDistance == spline->GetSplineLength() ? 0 : spline->GetSplineLength();
+		}
+		else {
+			currentDirection *= -1;
+		}
+		
 	}
 }
 

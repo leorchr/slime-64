@@ -22,13 +22,19 @@ protected:
 	class USplineComponent* spline;
 	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
 	class UStaticMeshComponent* mesh;
-
+	
 	
 
 	float currentDirection = 1;
 
 	UPROPERTY(EditAnywhere)
 	float moveSpeed = 100;
+
+	UPROPERTY(EditAnywhere, meta = (ClampMin = "0", ClampMax = "1"))
+	float beginProgress = 0;
+
+	UPROPERTY(EditAnywhere)
+	bool startInReverse = false;
 
 	
 
