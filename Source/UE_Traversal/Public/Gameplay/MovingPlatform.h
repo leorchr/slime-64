@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "MovingPlatform.generated.h"
 
+
+
 UCLASS()
 class UE_TRAVERSAL_API AMovingPlatform : public AActor
 {
@@ -13,6 +15,8 @@ class UE_TRAVERSAL_API AMovingPlatform : public AActor
 	
 public:	
 	AMovingPlatform(const FObjectInitializer& ObjectInitializer);
+
+
 
 protected:
 	// Called when the game starts or when spawned

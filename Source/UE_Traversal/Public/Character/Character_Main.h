@@ -30,6 +30,8 @@ enum class EMovementState : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStateChange, EMovementState, OldState, EMovementState, NewState);
 
+
+
 UCLASS()
 class UE_TRAVERSAL_API ACharacter_Main : public ACharacter
 {

@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Rail.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRailEvent);
+
 UCLASS()
 class UE_TRAVERSAL_API ARail : public AActor
 {
@@ -13,6 +15,12 @@ class UE_TRAVERSAL_API ARail : public AActor
 	
 public:	
 	ARail(const FObjectInitializer& ObjectInitializer);
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FRailEvent OnEnter;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FRailEvent OnExit;
 
 	UFUNCTION()
 	void OnBeginPlayerOverlap();

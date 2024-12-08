@@ -76,6 +76,8 @@ void ARail::OnBeginPlayerOverlap()
 
 	LastForward = Character->ActorForward;
 	Timer = 0.0f;
+
+	OnEnter.Broadcast();
 }
 
 void ARail::OnEndPlayerOverlap()
@@ -84,6 +86,7 @@ void ARail::OnEndPlayerOverlap()
 	{
 		Orb->Destroy();
 		Orb = nullptr;
+		OnExit.Broadcast();
 	}
 }
 

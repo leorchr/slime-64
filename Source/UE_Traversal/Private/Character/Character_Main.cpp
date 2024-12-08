@@ -203,12 +203,17 @@ void ACharacter_Main::Tick(float DeltaTime)
 		FVector3d rayEnd = rayStart + (-lastWallNormal*100);
 
 		FHitResult hitInfo;
+		FHitResult hitGroundInfo;
 		FCollisionQueryParams Params;
 
 		Params.AddIgnoredActor(this);
 
 		const bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, rayStart, rayEnd, WallCollisionChannel);
-		if (!bHit) {
+
+		rayEnd = rayStart + FVector::DownVector * 50;
+		const bool bHitGround = GetWorld()->LineTraceSingleByChannel(hitGroundInfo, rayStart, rayEnd, WallCollisionChannel);
+
+		if (!bHit ||bHitGround) {
 			movement->GravityScale = BaseGravity;
 			setNewState(EMovementState::Falling);
 			movement->bNotifyApex = false;
@@ -218,6 +223,7 @@ void ACharacter_Main::Tick(float DeltaTime)
 		if (currentMovingWall) {
 			SetActorLocation(GetActorLocation() + currentMovingWall->getNextMove(currSplineDistMovingWall, DeltaTime));
 		}
+		
 	}
 	FVector vel = movement->Velocity;
 	vel.Z = 0;
