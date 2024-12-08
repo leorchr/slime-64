@@ -22,6 +22,9 @@ public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FRailEvent OnExit;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	bool EjectAutomatically;
+
 	UFUNCTION()
 	void OnBeginPlayerOverlap();
 	UFUNCTION()

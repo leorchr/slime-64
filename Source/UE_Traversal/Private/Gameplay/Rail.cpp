@@ -132,6 +132,10 @@ void ARail::Tick(float DeltaTime)
 			Orb->Inertia = SplineComponent->GetDirectionAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World) * LaunchStrength;
 			Orb->Inertia.X *= Direction;
 			Orb->Inertia.Y *= Direction;
+
+			if ((Distance == 0 || Distance == SplineComponent->GetSplineLength()) && EjectAutomatically) {
+				Character->DetachFromOrb();
+			}
 		}
 	} else
 	{

@@ -421,3 +421,8 @@ void ACharacter_Main::CharacterJump()
 		setNewRotationForwardTarget(wNormalNoZ);
 	}
 }
+
+void ACharacter_Main::changeMesh(UStaticMesh* newMesh)
+{
+	blobMesh->SetStaticMesh(newMesh);
+}

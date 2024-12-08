@@ -179,4 +179,7 @@ public:
 	void Move(FVector2d Direction);
 	void Run(bool RunToggle);
 	void CharacterJump();
+
+	UFUNCTION(BlueprintCallable)
+	void changeMesh(UStaticMesh* newMesh);
 };
